@@ -1,0 +1,48 @@
+/* auth.css: Styles for the authentication page */
+.auth-container {
+    max-width: 350px;
+    margin: 80px auto;
+    padding: 2rem 2.5rem;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    text-align: center;
+}
+.auth-container h2 {
+    margin-bottom: 1.5rem;
+    color: #2d3a4b;
+}
+.auth-container label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #444;
+    text-align: left;
+}
+.auth-container input[type="email"] {
+    width: 100%;
+    padding: 0.7rem;
+    margin-bottom: 1.2rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+.auth-container button {
+    width: 100%;
+    padding: 0.7rem;
+    background: #2d7ff9;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.auth-container button:hover {
+    background: #1a5fd0;
+}
+.error-message {
+    color: #d32f2f;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    min-height: 1.2em;
+}

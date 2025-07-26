@@ -1,0 +1,23 @@
+<!-- auth.html moved to html/ directory. Updated to use external CSS and JS. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OLIVIA - Authentification</title>
+    <link rel="stylesheet" href="../css/auth.css">
+</head>
+<body>
+    <div class="auth-container">
+        <h2>Connexion à OLIVIA</h2>
+        <form id="loginForm">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+            <button type="submit">Se connecter</button>
+            <div id="loginError" class="error-message"></div>
+        </form>
+    </div>
+    <script src="../js/login.js"></script>
+</body>
+</html>

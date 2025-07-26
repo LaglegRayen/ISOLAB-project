@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voir les Machines - ISOLAB Agri Support</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2 class="sidebar-title">ISOLAB Agri Support</h2>
+                <p class="sidebar-subtitle">Système de gestion</p>
+            </div>
+            <ul class="sidebar-nav">
+                <li><a href="dashboard.html" id="nav-dashboard"><i class="fas fa-home"></i> Tableau de bord</a></li>
+                <li><a href="voir-machines.html" id="nav-machines" class="active"><i class="fas fa-cogs"></i> Voir les machines</a></li>
+                <li><a href="clients.html" id="nav-clients"><i class="fas fa-users"></i> Clients</a></li>
+                <li><a href="ajouter-client.html" id="nav-add-client"><i class="fas fa-user-plus"></i> Ajouter Client</a></li>
+                <li><a href="ajouter-machine.html" id="nav-add-machine"><i class="fas fa-plus-circle"></i> Ajouter Machine</a></li>
+                <li><a href="../index.html" id="nav-logout"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="page-header">
+                <h1 class="page-title">Voir les machines</h1>
+                <p>Recherchez et consultez les fiches techniques des machines OLIVIA</p>
+            </div>
+
+            <!-- Search Section -->
+            <div class="search-section">
+                <div class="search-container">
+                    <div class="search-input-group">
+                        <input type="text" id="machineSearch" class="search-bar" placeholder="Rechercher par numéro de série, client, société...">
+                        <button class="btn btn-primary search-btn" onclick="searchMachine()">
+                            <i class="fas fa-search"></i> Rechercher
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="search-filters">
+                    <select id="typeFilter" class="filter-select">
+                        <option value="">Tous les types</option>
+                        <option value="olivia">Olivia</option>
+                        <option value="olivia+broyeur">Olivia + Broyeur</option>
+                    </select>
+                    <select id="statusFilter" class="filter-select">
+                        <option value="">Tous les statuts</option>
+                        <option value="livré">Livré</option>
+                        <option value="installé">Installé</option>
+                        <option value="maintenance">Maintenance</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Machine Details Display -->
+            <div id="machineDetails" class="machine-details" style="display: none;">
+                <div class="fiche-technique">
+                    <div class="fiche-header">
+                        <h2><i class="fas fa-cog"></i> Fiche technique</h2>
+                        <div class="fiche-actions">
+                            <button class="btn btn-secondary btn-small" onclick="printFiche()">
+                                <i class="fas fa-print"></i> Imprimer
+                            </button>
+                            <button class="btn btn-primary btn-small" onclick="exportFiche()">
+                                <i class="fas fa-download"></i> Exporter
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="fiche-content">
+                        <!-- Machine Information -->
+                        <div class="fiche-section">
+                            <h3><i class="fas fa-cogs"></i> Informations Machine</h3>
+                            <div class="fiche-grid">
+                                <div class="fiche-item">
+                                    <label>Numéro de série:</label>
+                                    <span id="serialNumber">-</span>
+                                </div>
+                                <div class="fiche-item">
+                                    <label>Type de machine:</label>
+                                    <span id="machineType">-</span>
+                                </div>
+                                <div class="fiche-item">
+                                    <label>Fiche technique N°:</label>
+                                    <span id="ficheNumber">-</span>
+                                </div>
+                                <div class="fiche-item">
+                                    <label>Prix HT:</label>
+                                    <span id="prixHT">-</span>
+                                </div>
+                                <div class="fiche-item">
+                                    <label>Prix TTC:</label>
+                                    <span id="prixTTC">-</span>
+                                </div>
+                                <div class="fiche-item">
+                                    <label>Statut:</label>
+                                    <span id="machineStatus" class="status-badge">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Client Information -->
+                        <div class="fiche-section">
+                            <h3><i class="fas fa-building"></i> Informations Client</h3>
+                            <div class="fiche-grid">
+                                <div class="fiche-item">
+                                    <label>Société:</label>
+                                    <span id="clientSociety">-</span>
+                                </div>
+                                <div class="fiche-item">
+                                    <label>Gérant:</label>
+                                    <span id="clientName">-</span>
+                                </div>
+                                <div class="fiche-item">
+                                    <label>Matricule fiscale:</label>
+                                    <span id="matriculeFiscale">-</span>
+                                </div>
+                                <div class="fiche-item">
+                                    <label>Téléphone:</label>
+                                    <span id="clientPhone">-</span>
+                                </div>
+                                <div class="fiche-item">
+                                    <label>Email:</label>
+                                    <span id="clientEmail">-</span>
+                                </div>
+                                <div class="fiche-item">
+                                    <label>Adresse:</label>
+                                    <span id="clientAddress">-</span>
+                                </div>
+                                <div class="fiche-item">
+                                    <label>Localisation:</label>
+                                    <span id="clientLocation">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Installation Information -->
+                        <div class="fiche-section">
+                            <h3><i class="fas fa-calendar-alt"></i> Informations Installation</h3>
+                            <div class="fiche-grid">
+                                <div class="fiche-item">
+                                    <label>Date de livraison:</label>
+                                    <span id="deliveryDate">-</span>
+                                </div>
+                                <div class="fiche-item">
+                                    <label>Date d'installation:</label>
+                                    <span id="installationDate">-</span>
+                                </div>
+                                <div class="fiche-item">
+                                    <label>Installé par:</label>
+                                    <span id="installedBy">-</span>
+                                </div>
+                                <div class="fiche-item">
+                                    <label>Livré par:</label>
+                                    <span id="deliveredBy">-</span>
+                                </div>
+                                <div class="fiche-item">
+                                    <label>Décharge BL:</label>
+                                    <span id="dischargeBL">-</span>
+                                </div>
+                                <div class="fiche-item">
+                                    <label>Facturation:</label>
+                                    <span id="facturation">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payment Information -->
+                        <div class="fiche-section">
+                            <h3><i class="fas fa-credit-card"></i> Informations Paiement</h3>
+                            <div class="fiche-grid">
+                                <div class="fiche-item">
+                                    <label>Type de paiement:</label>
+                                    <span id="paymentType">-</span>
+                                </div>
+                                <div class="fiche-item">
+                                    <label>Statut paiement:</label>
+                                    <span id="paymentStatus">-</span>
+                                </div>
+                                <div class="fiche-item">
+                                    <label>Confirmation:</label>
+                                    <span id="confirmation">-</span>
+                                </div>
+                                <div class="fiche-item">
+                                    <label>ITP:</label>
+                                    <span id="itp">-</span>
+                                </div>
+                                <div class="fiche-item">
+                                    <label>RS:</label>
+                                    <span id="rs">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Maintenance & Remarks -->
+                        <div class="fiche-section">
+                            <h3><i class="fas fa-wrench"></i> Maintenance & Remarques</h3>
+                            <div class="fiche-grid">
+                                <div class="fiche-item full-width">
+                                    <label>Remarques:</label>
+                                    <span id="remarques">-</span>
+                                </div>
+                                <div class="fiche-item">
+                                    <label>Date de visite:</label>
+                                    <span id="visitDate">-</span>
+                                </div>
+                                <div class="fiche-item">
+                                    <label>Travail effectué:</label>
+                                    <span id="workDone">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- No Results Message -->
+            <div id="noResults" class="no-results" style="display: none;">
+                <div class="no-results-content">
+                    <i class="fas fa-search"></i>
+                    <h3>Aucune machine trouvée</h3>
+                    <p>Veuillez vérifier les critères de recherche et réessayer.</p>
+                </div>
+            </div>
+
+            <!-- Instructions -->
+            <div id="instructions" class="instructions-panel">
+                <div class="instructions-content">
+                    <h3><i class="fas fa-info-circle"></i> Instructions</h3>
+                    <ul>
+                        <li>Utilisez la barre de recherche pour trouver une machine par numéro de série, nom du client ou société</li>
+                        <li>Filtrez par type de machine ou statut pour affiner votre recherche</li>
+                        <li>Cliquez sur "Rechercher" pour afficher la fiche technique complète</li>
+                        <li>Utilisez les boutons "Imprimer" ou "Exporter" pour sauvegarder les informations</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/template.js"></script>
+    <script src="../js/navigation.js"></script>
+    <script src="../js/voir-machines.js"></script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - ISOLAB Agri Support</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .login-header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .login-header p {
+            color: #7f8c8d;
+            margin: 0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #34495e;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e3e3e3;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .login-button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .login-button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .login-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .error-message {
+            background: #e74c3c;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #7f8c8d;
+            display: none;
+        }
+        
+        .demo-users {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .demo-users h3 {
+            margin: 0 0 15px 0;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+        
+        .demo-user {
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: #7f8c8d;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 3px;
+            transition: background-color 0.2s;
+        }
+        
+        .demo-user:hover {
+            background: #e9ecef;
+        }
+        
+        .role-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            background: #3498db;
+            color: white;
+            border-radius: 3px;
+            font-size: 10px;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>🌾 ISOLAB Agri Support</h1>
+            <p>Système de gestion des machines agricoles</p>
+        </div>
+        
+        <div class="error-message" id="errorMessage"></div>
+        <div class="loading" id="loadingMessage">Connexion en cours...</div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email :</label>
+                <input type="email" id="email" name="email" required placeholder="votre.email@isolab.tn">
+            </div>
+            
+            <button type="submit" class="login-button" id="loginButton">
+                Se connecter
+            </button>
+        </form>
+        
+        <div class="demo-users">
+            <h3>👥 Utilisateurs de démonstration :</h3>
+            <div class="demo-user" onclick="quickLogin('ahmed.benali@isolab.tn')">
+                Ahmed Ben Ali <span class="role-badge">Matériaux</span>
+            </div>
+            <div class="demo-user" onclick="quickLogin('fatma.triki@isolab.tn')">
+                Fatma Triki <span class="role-badge">Assemblage</span>
+            </div>
+            <div class="demo-user" onclick="quickLogin('sarra.bouaziz@isolab.tn')">
+                Sarra Bouaziz <span class="role-badge">Livraison</span>
+            </div>
+            <div class="demo-user" onclick="quickLogin('karim.nasri@isolab.tn')">
+                Karim Nasri <span class="role-badge">Maintenance</span>
+            </div>
+            <div class="demo-user" onclick="quickLogin('olfa.mansouri@isolab.tn')">
+                Olfa Mansouri <span class="role-badge">Admin</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const errorMessage = document.getElementById('errorMessage');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const loginButton = document.getElementById('loginButton');
+        const emailInput = document.getElementById('email');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await handleLogin();
+        });
+
+        async function handleLogin() {
+            const email = emailInput.value.trim();
+            
+            if (!email) {
+                showError('Veuillez saisir votre email');
+                return;
+            }
+
+            setLoading(true);
+            hideError();
+
+            try {
+                const response = await fetch('/api/users/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: email })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Store user info in sessionStorage
+                    sessionStorage.setItem('currentUser', JSON.stringify(data.user));
+                    
+                    // Redirect to dashboard
+                    window.location.href = 'html/dashboard.html';
+                } else {
+                    showError(data.error || 'Erreur de connexion');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showError('Erreur de connexion. Vérifiez votre connexion internet.');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function quickLogin(email) {
+            emailInput.value = email;
+            handleLogin();
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+
+        function setLoading(loading) {
+            if (loading) {
+                loginButton.disabled = true;
+                loginButton.textContent = 'Connexion...';
+                loadingMessage.style.display = 'block';
+            } else {
+                loginButton.disabled = false;
+                loginButton.textContent = 'Se connecter';
+                loadingMessage.style.display = 'none';
+            }
+        }
+
+        // Check if user is already logged in
+        const currentUser = sessionStorage.getItem('currentUser');
+        if (currentUser) {
+            window.location.href = 'html/dashboard.html';
+        }
+    </script>
+</body>
+</html>
