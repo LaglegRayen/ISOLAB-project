@@ -11,11 +11,16 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function checkAuthentication() {
-    const user = localStorage.getItem('user');
-    if (!user) {
-        window.location.href = 'login.html';
-        return;
-    }
+    fetch('/api/users/current')
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                window.location.href = '../login.html';
+            }
+        })
+        .catch(() => {
+            window.location.href = '../login.html';
+        });
 }
 
 function initializeForm() {
@@ -226,7 +231,19 @@ function addAnotherClient() {
 }
 
 function goToClientsList() {
-    window.location.href = 'clients.html';
+    // Optionally, you can check authentication again before navigating
+    fetch('/api/users/current')
+        .then(res => res.json())
+        .then(data => {
+            if (!data.error) {
+                window.location.href = 'clients.html';
+            } else {
+                window.location.href = '../login.html';
+            }
+        })
+        .catch(() => {
+            window.location.href = '../login.html';
+        });
 }
 
 function resetForm() {
@@ -249,7 +266,7 @@ function resetForm() {
 
 function cancelAddClient() {
     if (confirm('Êtes-vous sûr de vouloir annuler ? Toutes les données saisies seront perdues.')) {
-        window.location.href = 'clients.html';
+        goToClientsList();
     }
 }
 

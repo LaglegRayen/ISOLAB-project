@@ -6,7 +6,7 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 import os
 
-# Global variables
+
 db = None
 firebase_app = None
 
@@ -16,7 +16,7 @@ def initialize_firebase():
     
     try:
         # Check for service account key
-        service_key_path = "serviceAccountKey.json"
+        service_key_path = "config\isolab-agri-support-firebase-adminsdk-fbsvc-07e9177026.json"
         
         if not os.path.exists(service_key_path):
             print(f"Warning: Firebase service account key not found at {service_key_path}")
@@ -30,11 +30,11 @@ def initialize_firebase():
         # Initialize Firestore DB
         db = firestore.client()
         
-        print("✅ Firebase initialized successfully")
+        print("Firebase initialized successfully")
         return True
         
     except Exception as e:
-        print(f"❌ Firebase initialization failed: {e}")
+        print(f"Firebase initialization failed: {e}")
         return False
 
 def get_db():

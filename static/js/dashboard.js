@@ -11,21 +11,19 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function checkAuthentication() {
-    const currentUser = sessionStorage.getItem('currentUser');
-    if (!currentUser) {
-        window.location.href = '../auth.html';
-        return;
-    }
-    
-    try {
-        const user = JSON.parse(currentUser);
-        displayUserInfo(user);
-        configureNavigationByRole(user.role);
-    } catch (error) {
-        console.error('Error parsing user data:', error);
-        sessionStorage.removeItem('currentUser');
-        window.location.href = '../auth.html';
-    }
+    fetch('/api/users/current')
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                window.location.href = '../login.html';
+            } else {
+                displayUserInfo(data);
+                configureNavigationByRole(data.role);
+            }
+        })
+        .catch(() => {
+            window.location.href = '../login.html';
+        });
 }
 
 function displayUserInfo(user) {
@@ -145,7 +143,7 @@ function displayMyTasks(tasks) {
         container.innerHTML = `
             <div class="no-tasks">
                 <i class="fas fa-check-circle"></i>
-                <h3>🎉 Aucune tâche en cours</h3>
+                <h3>Aucune tâche en cours</h3>
                 <p>Toutes vos tâches sont terminées !</p>
             </div>
         `;
@@ -211,8 +209,19 @@ async function validateTask(stageId, machineId) {
 }
 
 function viewMachineDetails(machineId) {
-    // Navigate to machine details or open modal
-    window.location.href = `voir-machines.html?machine=${machineId}`;
+    // Check authentication before navigating
+    fetch('/api/users/current')
+        .then(res => res.json())
+        .then(data => {
+            if (!data.error) {
+                window.location.href = `voir-machines.html?machine=${machineId}`;
+            } else {
+                window.location.href = '../login.html';
+            }
+        })
+        .catch(() => {
+            window.location.href = '../login.html';
+        });
 }
 
 function initializeDashboard() {
@@ -246,31 +255,72 @@ function setupQuickActions() {
     const addMachineAction = document.getElementById('action-add-machine');
     if (addMachineAction) {
         addMachineAction.addEventListener('click', () => {
-            window.location.href = 'ajouter-machine.html';
+            fetch('/api/users/current')
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.error) {
+                        window.location.href = 'ajouter-machine.html';
+                    } else {
+                        window.location.href = '../login.html';
+                    }
+                })
+                .catch(() => {
+                    window.location.href = '../login.html';
+                });
         });
     }
-    
     // Add client action
     const addClientAction = document.getElementById('action-add-client');
     if (addClientAction) {
         addClientAction.addEventListener('click', () => {
-            window.location.href = 'ajouter-client.html';
+            fetch('/api/users/current')
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.error) {
+                        window.location.href = 'ajouter-client.html';
+                    } else {
+                        window.location.href = '../login.html';
+                    }
+                })
+                .catch(() => {
+                    window.location.href = '../login.html';
+                });
         });
     }
-    
     // View machines action
     const viewMachinesAction = document.getElementById('action-view-machines');
     if (viewMachinesAction) {
         viewMachinesAction.addEventListener('click', () => {
-            window.location.href = 'voir-machines.html';
+            fetch('/api/users/current')
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.error) {
+                        window.location.href = 'voir-machines.html';
+                    } else {
+                        window.location.href = '../login.html';
+                    }
+                })
+                .catch(() => {
+                    window.location.href = '../login.html';
+                });
         });
     }
-    
     // Manage users action
     const manageUsersAction = document.getElementById('action-manage-users');
     if (manageUsersAction) {
         manageUsersAction.addEventListener('click', () => {
-            window.location.href = 'users.html';
+            fetch('/api/users/current')
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.error) {
+                        window.location.href = 'users.html';
+                    } else {
+                        window.location.href = '../login.html';
+                    }
+                })
+                .catch(() => {
+                    window.location.href = '../login.html';
+                });
         });
     }
 }
@@ -280,24 +330,14 @@ function setupLogout() {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', async (e) => {
             e.preventDefault();
-            
             try {
                 // Call logout API
-                await fetch('/api/users/logout', {
-                    method: 'POST'
-                });
-                
-                // Clear session storage
-                sessionStorage.removeItem('currentUser');
-                
-                // Redirect to login
-                window.location.href = '../auth.html';
-                
+                await fetch('/api/users/logout', { method: 'POST' });
             } catch (error) {
                 console.error('Logout error:', error);
-                // Force logout anyway
+            } finally {
                 sessionStorage.removeItem('currentUser');
-                window.location.href = '../auth.html';
+                window.location.href = '../login.html';
             }
         });
     }

@@ -14,11 +14,16 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function checkAuthentication() {
-    const user = localStorage.getItem('user');
-    if (!user) {
-        window.location.href = 'login.html';
-        return;
-    }
+    fetch('/api/users/current')
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                window.location.href = '../login.html';
+            }
+        })
+        .catch(() => {
+            window.location.href = '../login.html';
+        });
 }
 
 let allClients = [];

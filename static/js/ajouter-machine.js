@@ -11,11 +11,16 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function checkAuthentication() {
-    const user = localStorage.getItem('user');
-    if (!user) {
-        window.location.href = 'login.html';
-        return;
-    }
+    fetch('/api/users/current')
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                window.location.href = '../login.html';
+            }
+        })
+        .catch(() => {
+            window.location.href = '../login.html';
+        });
 }
 
 let allClients = [];
@@ -349,11 +354,33 @@ function addAnotherMachine() {
 
 function goToMachinesList() {
     // Navigate to machines list
-    window.location.href = 'voir-machines.html';
+    fetch('/api/users/current')
+        .then(res => res.json())
+        .then(data => {
+            if (!data.error) {
+                window.location.href = 'voir-machines.html';
+            } else {
+                window.location.href = '../login.html';
+            }
+        })
+        .catch(() => {
+            window.location.href = '../login.html';
+        });
 }
 
 function cancelAddMachine() {
     if (confirm('Êtes-vous sûr de vouloir annuler ? Toutes les données saisies seront perdues.')) {
-        window.location.href = 'dashboard.html';
+    fetch('/api/users/current')
+        .then(res => res.json())
+        .then(data => {
+            if (!data.error) {
+                window.location.href = 'dashboard.html';
+            } else {
+                window.location.href = '../login.html';
+            }
+        })
+        .catch(() => {
+            window.location.href = '../login.html';
+        });
     }
 }

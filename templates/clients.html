@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clients - ISOLAB Agri Support</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2 class="sidebar-title">ISOLAB Agri Support</h2>
+                <p class="sidebar-subtitle">Système de gestion</p>
+            </div>
+            <ul class="sidebar-nav">
+                <li><a href="dashboard.html" id="nav-dashboard"><i class="fas fa-home"></i> Tableau de bord</a></li>
+                <li><a href="voir-machines.html" id="nav-machines"><i class="fas fa-cogs"></i> Voir les machines</a></li>
+                <li><a href="clients.html" id="nav-clients" class="active"><i class="fas fa-users"></i> Clients</a></li>
+                <li><a href="ajouter-client.html" id="nav-add-client"><i class="fas fa-user-plus"></i> Ajouter Client</a></li>
+                <li><a href="ajouter-machine.html" id="nav-add-machine"><i class="fas fa-plus-circle"></i> Ajouter Machine</a></li>
+                <li><a href="../index.html" id="nav-logout"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">Gestion des Clients</h1>
+                <p class="page-subtitle">Gérez vos clients et leurs informations</p>
+            </div>
+
+            <!-- Search and Filter Section -->
+            <div class="search-section">
+                <div class="search-input-group">
+                    <input type="text" id="clientSearch" class="search-bar" placeholder="Rechercher par nom, société, téléphone...">
+                    <button class="btn btn-primary search-btn" onclick="searchClients()">
+                        <i class="fas fa-search"></i> Rechercher
+                    </button>
+                    <button class="btn btn-success" onclick="window.location.href='ajouter-client.html'">
+                        <i class="fas fa-user-plus"></i> Ajouter un Client
+                    </button>
+                </div>
+                
+                <div class="search-filters">
+                    <select id="statusFilter" class="filter-select">
+                        <option value="">Tous les statuts</option>
+                        <option value="actif">Actif</option>
+                        <option value="inactif">Inactif</option>
+                    </select>
+                    <select id="typeFilter" class="filter-select">
+                        <option value="">Type de client</option>
+                        <option value="leasing">Leasing</option>
+                        <option value="direct">Direct</option>
+                        <option value="agri">Agri</option>
+                    </select>
+                    <select id="locationFilter" class="filter-select">
+                        <option value="">Toutes les régions</option>
+                        <option value="sfax">Sfax</option>
+                        <option value="sidi-bouzid">Sidi Bouzid</option>
+                        <option value="autres">Autres</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Clients Table -->
+            <div class="table-container">
+                <h3 style="padding: 20px; margin: 0; border-bottom: 1px solid #e4e6ea;">
+                    Liste des Clients
+                    <span class="total-count" id="totalClientsCount">0 clients</span>
+                </h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Société</th>
+                            <th>Gérant</th>
+                            <th>Téléphone</th>
+                            <th>Email</th>
+                            <th>Localisation</th>
+                            <th>Type</th>
+                            <th>Machines</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientsTableBody">
+                        <!-- Data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Client Details Modal -->
+            <div id="clientModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 id="modalTitle">Détails du Client</h3>
+                        <button class="close-modal" onclick="closeClientModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="client-details">
+                            <div class="client-info-grid">
+                                <div class="client-info-item">
+                                    <label>Société:</label>
+                                    <span id="modalSociety">-</span>
+                                </div>
+                                <div class="client-info-item">
+                                    <label>Gérant:</label>
+                                    <span id="modalManager">-</span>
+                                </div>
+                                <div class="client-info-item">
+                                    <label>Matricule fiscale:</label>
+                                    <span id="modalFiscalNumber">-</span>
+                                </div>
+                                <div class="client-info-item">
+                                    <label>Téléphone:</label>
+                                    <span id="modalPhone">-</span>
+                                </div>
+                                <div class="client-info-item">
+                                    <label>Email:</label>
+                                    <span id="modalEmail">-</span>
+                                </div>
+                                <div class="client-info-item">
+                                    <label>Adresse:</label>
+                                    <span id="modalAddress">-</span>
+                                </div>
+                                <div class="client-info-item">
+                                    <label>Localisation:</label>
+                                    <span id="modalLocation">-</span>
+                                </div>
+                                <div class="client-info-item">
+                                    <label>Type:</label>
+                                    <span id="modalType">-</span>
+                                </div>
+                            </div>
+                            
+                            <div class="client-machines">
+                                <h4>Machines du Client</h4>
+                                <div id="clientMachines">
+                                    <!-- Client machines will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeClientModal()">Fermer</button>
+                        <button class="btn btn-primary" onclick="editClient()">Modifier</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/template.js"></script>
+    <script src="../js/navigation.js"></script>
+    <script src="/static/js/clients.js"></script>
+</body>
+</html>
