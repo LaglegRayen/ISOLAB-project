@@ -14,15 +14,15 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function checkAuthentication() {
-    fetch('/api/users/current')
+    fetch('/users/current')
         .then(res => res.json())
         .then(data => {
             if (data.error) {
-                window.location.href = '../login.html';
+                window.location.href = '/login';
             }
         })
         .catch(() => {
-            window.location.href = '../login.html';
+            window.location.href = '/login';
         });
 }
 
@@ -31,7 +31,13 @@ let allClients = [];
 async function loadClientsData() {
     try {
         // Load clients from API
-        const response = await fetch('/api/clients');
+
+        const response = await fetch('/clients/all', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
         if (response.ok) {
             const result = await response.json();
             allClients = result.data || [];
@@ -182,7 +188,7 @@ async function deleteClient(clientId) {
     }
     
     try {
-        const response = await fetch(`/api/clients/${clientId}`, {
+        const response = await fetch(`/clients/${clientId}`, {
             method: 'DELETE'
         });
         

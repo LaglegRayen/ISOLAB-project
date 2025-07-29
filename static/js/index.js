@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var quickLoginBtn = document.getElementById('quickLoginBtn');
     if (quickLoginBtn) {
         quickLoginBtn.addEventListener('click', function() {
-            fetch('/api/goto-login', { method: 'GET' })
+            fetch('/goto-login', { method: 'GET' })
                 .then(response => {
                     if (response.ok) {
                         // Redirect to the login page using the same URL

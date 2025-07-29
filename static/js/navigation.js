@@ -1,7 +1,6 @@
 // Navigation Management - Enhanced with Template System
 document.addEventListener('DOMContentLoaded', function() {
     // Template system handles navigation setup
-    // This file now provides additional navigation enhancements
     
     // Add navigation listeners
     addNavigationListeners();

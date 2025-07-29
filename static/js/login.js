@@ -1,3 +1,19 @@
+// Logout functionality
+function handleLogout() {
+    fetch('http://127.0.0.1:5000/logout', {
+        method: 'POST',
+        credentials: 'include',
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log('Logout response:', data);
+        sessionStorage.removeItem('currentUser');
+        window.location.href = '/';
+    })
+    .catch(err => {
+        console.log('Logout error:', err);
+    });
+}
 // Login functionality
 document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('loginForm');
@@ -22,6 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function handleLogin() {
+    
     const email = document.getElementById('email').value;
     // Basic validation
     if (!email) {
@@ -34,65 +51,75 @@ function handleLogin() {
     submitBtn.innerHTML = 'Connexion...';
     submitBtn.disabled = true;
     // Call login API
-    fetch('/api/auth/login', {
+    console.log('handleLogin called');
+    fetch('http://127.0.0.1:5000/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
     })
-    .then(res => res.json().then(data => ({ ok: res.ok, data })))
+    .then(res => {
+        console.log('Fetch response received', res);
+        return res.json().then(data => {
+            console.log('JSON parsed', data);
+            return { ok: res.ok, data };
+        });
+    })
     .then(({ ok, data }) => {
+        console.log('Then block', { ok, data });
         if (ok) {
             sessionStorage.setItem('currentUser', JSON.stringify(data.user));
-            window.location.href = 'dashboard.html';
+            window.location.href = '/dashboard';
         } else {
             showError(data.error || 'Erreur de connexion');
         }
     })
-    .catch(() => {
+    .catch((err) => {
+        console.log('Catch block', err);
         showError('Erreur de connexion. Vérifiez votre connexion internet.');
     })
     .finally(() => {
+        console.log('Finally block');
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
     });
 }
 
-function handleSignup() {
-    const name = document.getElementById('signupName').value;
-    const email = document.getElementById('signupEmail').value;
-    const password = document.getElementById('signupPassword').value;
-    const role = document.getElementById('signupRole').value;
-    if (!name || !email || !password || !role) {
-        showError('Veuillez remplir tous les champs pour vous inscrire.');
-        return;
-    }
-    const submitBtn = document.querySelector('#signupForm button[type="submit"]');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = 'Inscription...';
-    submitBtn.disabled = true;
-    fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password, role })
-    })
-    .then(res => res.json().then(data => ({ ok: res.ok, data })))
-    .then(({ ok, data }) => {
-        if (ok) {
-            alert('Inscription réussie ! Vous pouvez maintenant vous connecter.');
-            document.getElementById('signupForm').reset();
-            document.getElementById('signupForm').style.display = 'none';
-        } else {
-            showError(data.error || 'Erreur lors de l\'inscription');
-        }
-    })
-    .catch(() => {
-        showError('Erreur lors de l\'inscription. Vérifiez votre connexion internet.');
-    })
-    .finally(() => {
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-    });
-}
+// function handleSignup() {
+//     const name = document.getElementById('signupName').value;
+//     const email = document.getElementById('signupEmail').value;
+//     const password = document.getElementById('signupPassword').value;
+//     const role = document.getElementById('signupRole').value;
+//     if (!name || !email || !password || !role) {
+//         showError('Veuillez remplir tous les champs pour vous inscrire.');
+//         return;
+//     }
+//     const submitBtn = document.querySelector('#signupForm button[type="submit"]');
+//     const originalText = submitBtn.innerHTML;
+//     submitBtn.innerHTML = 'Inscription...';
+//     submitBtn.disabled = true;
+//     fetch('/signup', {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ name, email, password, role })
+//     })
+//     .then(res => res.json().then(data => ({ ok: res.ok, data })))
+//     .then(({ ok, data }) => {
+//         if (ok) {
+//             alert('Inscription réussie ! Vous pouvez maintenant vous connecter.');
+//             document.getElementById('signupForm').reset();
+//             document.getElementById('signupForm').style.display = 'none';
+//         } else {
+//             showError(data.error || 'Erreur lors de l\'inscription');
+//         }
+//     })
+//     .catch(() => {
+//         showError('Erreur lors de l\'inscription. Vérifiez votre connexion internet.');
+//     })
+//     .finally(() => {
+//         submitBtn.innerHTML = originalText;
+//         submitBtn.disabled = false;
+//     });
+// }
 
 function showError(message) {
     // Show error in the dedicated error div

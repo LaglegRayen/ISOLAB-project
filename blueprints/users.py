@@ -9,7 +9,7 @@ from datetime import datetime
 from .firebase_config import get_db, is_firebase_available
 
 # Create users blueprint
-users_bp = Blueprint('users', __name__, url_prefix='/api/users')
+users_bp = Blueprint('users', __name__, url_prefix='/users')
 
 # Define role hierarchy and permissions
 ROLES = {
@@ -273,37 +273,39 @@ def login():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@users_bp.route('/logout', methods=['POST'])
-def logout():
-    """Logout - clear session"""
-    session.clear()
-    return jsonify({"message": "Logout successful"})
+# @users_bp.route('/logout', methods=['POST'])
+# def logout():
+#     """Logout - clear session"""
+#     session.clear()
+#     return jsonify({"message": "Logout successful"})
 
 @users_bp.route('/current', methods=['GET'])
 def get_current_user():
     """Get current logged in user"""
     try:
+        
         if 'user_id' not in session:
+            print("User not logged in")
             return jsonify({"error": "Not logged in"}), 401
         
         db = get_db()
         if not is_firebase_available():
+            print("Database not available")
             return jsonify({"error": "Database not available"}), 500
             
         doc_ref = db.collection('users').document(session['user_id'])
         doc = doc_ref.get()
         
         if not doc.exists:
+            print("User not found in database")
             session.clear()
             return jsonify({"error": "User not found"}), 404
-        
         user_data = doc.to_dict()
         user_data['id'] = doc.id
         
         # Add role info
         if user_data.get('role') in ROLES:
             user_data['role_info'] = ROLES[user_data['role']]
-        
         return jsonify(user_data)
         
     except Exception as e:

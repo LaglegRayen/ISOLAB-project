@@ -3,30 +3,37 @@ Clients CRUD blueprint - Simplified
 Handles only Create, Read, Update, Delete operations for clients
 """
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session, render_template, redirect, url_for
 from datetime import datetime
 from .firebase_config import get_db, is_firebase_available
 
 # Create clients blueprint
-clients_bp = Blueprint('clients', __name__, url_prefix='/api/clients')
+clients_bp = Blueprint('clients', __name__, url_prefix='/clients')
 
-@clients_bp.route('', methods=['GET'])
+@clients_bp.route('/', methods=['GET'])
+def clients_page():
+    if 'user_id' not in session:
+        return redirect(url_for('login_bp.login'))
+    return render_template('clients.html')
+
+@clients_bp.route('/all', methods=['GET'])
 def get_clients():
     """Read - Get all clients"""
     try:
         db = get_db()
         if not is_firebase_available():
+            print("Database not available")
             return jsonify({"error": "Database not available"}), 500
-            
+        
+
         clients_ref = db.collection('clients')
         docs = clients_ref.stream()
-        
+
         clients = []
         for doc in docs:
             client_data = doc.to_dict()
             client_data['id'] = doc.id
             clients.append(client_data)
-        
         return jsonify({"clients": clients})
         
     except Exception as e:
@@ -153,3 +160,4 @@ def delete_client(client_id):
         
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+

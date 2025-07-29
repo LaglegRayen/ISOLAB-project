@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function checkAuthentication() {
-    fetch('/api/users/current')
+    fetch('/users/current')
         .then(res => res.json())
         .then(data => {
             if (data.error) {
@@ -95,7 +95,7 @@ async function loadDashboardData() {
 
 async function loadDashboardStats() {
     try {
-        const response = await fetch('/api/stages/dashboard');
+        const response = await fetch('/stages/dashboard');
         
         if (!response.ok) {
             throw new Error('Failed to load dashboard stats');
@@ -121,7 +121,7 @@ async function loadDashboardStats() {
 
 async function loadMyTasks() {
     try {
-        const response = await fetch('/api/stages/my-tasks');
+        const response = await fetch('/stages/my-tasks');
         
         if (!response.ok) {
             throw new Error('Failed to load tasks');
@@ -181,7 +181,7 @@ async function validateTask(stageId, machineId) {
     const remarks = prompt('Remarques sur la validation (optionnel):');
     
     try {
-        const response = await fetch(`/api/stages/${stageId}/validate`, {
+        const response = await fetch(`/stages/${stageId}/validate`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -210,7 +210,7 @@ async function validateTask(stageId, machineId) {
 
 function viewMachineDetails(machineId) {
     // Check authentication before navigating
-    fetch('/api/users/current')
+    fetch('/users/current')
         .then(res => res.json())
         .then(data => {
             if (!data.error) {
@@ -231,8 +231,6 @@ function initializeDashboard() {
     // Initialize quick actions
     setupQuickActions();
     
-    // Initialize logout
-    setupLogout();
 }
 
 function setupNavigation() {
@@ -255,17 +253,17 @@ function setupQuickActions() {
     const addMachineAction = document.getElementById('action-add-machine');
     if (addMachineAction) {
         addMachineAction.addEventListener('click', () => {
-            fetch('/api/users/current')
+            fetch('/users/current')
                 .then(res => res.json())
                 .then(data => {
                     if (!data.error) {
-                        window.location.href = 'ajouter-machine.html';
+                        window.location.href = '/ajouter-machine';
                     } else {
-                        window.location.href = '../login.html';
+                        window.location.href = '/login';
                     }
                 })
                 .catch(() => {
-                    window.location.href = '../login.html';
+                    window.location.href = '/login';
                 });
         });
     }
@@ -273,17 +271,17 @@ function setupQuickActions() {
     const addClientAction = document.getElementById('action-add-client');
     if (addClientAction) {
         addClientAction.addEventListener('click', () => {
-            fetch('/api/users/current')
+            fetch('/users/current')
                 .then(res => res.json())
                 .then(data => {
                     if (!data.error) {
-                        window.location.href = 'ajouter-client.html';
+                        window.location.href = '/ajouter-client';
                     } else {
-                        window.location.href = '../login.html';
+                        window.location.href = '/login';
                     }
                 })
                 .catch(() => {
-                    window.location.href = '../login.html';
+                    window.location.href = '/login';
                 });
         });
     }
@@ -291,17 +289,17 @@ function setupQuickActions() {
     const viewMachinesAction = document.getElementById('action-view-machines');
     if (viewMachinesAction) {
         viewMachinesAction.addEventListener('click', () => {
-            fetch('/api/users/current')
+            fetch('/users/current')
                 .then(res => res.json())
                 .then(data => {
                     if (!data.error) {
-                        window.location.href = 'voir-machines.html';
+                        window.location.href = '/voir-machines';
                     } else {
-                        window.location.href = '../login.html';
+                        window.location.href = '/login';
                     }
                 })
                 .catch(() => {
-                    window.location.href = '../login.html';
+                    window.location.href = '/login';
                 });
         });
     }
@@ -309,39 +307,22 @@ function setupQuickActions() {
     const manageUsersAction = document.getElementById('action-manage-users');
     if (manageUsersAction) {
         manageUsersAction.addEventListener('click', () => {
-            fetch('/api/users/current')
+            fetch('/users/current')
                 .then(res => res.json())
                 .then(data => {
                     if (!data.error) {
-                        window.location.href = 'users.html';
+                        window.location.href = '/users';
                     } else {
-                        window.location.href = '../login.html';
+                        window.location.href = '/login';
                     }
                 })
                 .catch(() => {
-                    window.location.href = '../login.html';
+                    window.location.href = '/login';
                 });
         });
     }
 }
 
-function setupLogout() {
-    const logoutBtn = document.getElementById('nav-logout');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', async (e) => {
-            e.preventDefault();
-            try {
-                // Call logout API
-                await fetch('/api/users/logout', { method: 'POST' });
-            } catch (error) {
-                console.error('Logout error:', error);
-            } finally {
-                sessionStorage.removeItem('currentUser');
-                window.location.href = '../login.html';
-            }
-        });
-    }
-}
 
 // Utility functions
 function getStatusText(status) {

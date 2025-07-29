@@ -16,7 +16,7 @@ def initialize_firebase():
     
     try:
         # Check for service account key
-        service_key_path = "config\isolab-agri-support-firebase-adminsdk-fbsvc-07e9177026.json"
+        service_key_path = "C:\\Users\\rima lagleg\\Desktop\\ML DL\\ISOLAB-project\\config\\isolab-agri-support-firebase-adminsdk-fbsvc-73184d48a6.json"
         
         if not os.path.exists(service_key_path):
             print(f"Warning: Firebase service account key not found at {service_key_path}")

@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function checkAuthentication() {
-    fetch('/api/users/current')
+    fetch('/users/current')
         .then(res => res.json())
         .then(data => {
             if (data.error) {
@@ -45,7 +45,7 @@ function initializeForm() {
 
 async function loadClients() {
     try {
-        const response = await fetch('/api/clients');
+        const response = await fetch('/clients');
         if (response.ok) {
             const result = await response.json();
             allClients = result.data || [];
@@ -250,7 +250,7 @@ async function saveMachine(machineData) {
             prixTTC: parseFloat(machineData.prixTTC) || 0
         };
         
-        const response = await fetch('/api/machines', {
+        const response = await fetch('/machines', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -354,7 +354,7 @@ function addAnotherMachine() {
 
 function goToMachinesList() {
     // Navigate to machines list
-    fetch('/api/users/current')
+    fetch('/users/current')
         .then(res => res.json())
         .then(data => {
             if (!data.error) {
@@ -370,7 +370,7 @@ function goToMachinesList() {
 
 function cancelAddMachine() {
     if (confirm('Êtes-vous sûr de vouloir annuler ? Toutes les données saisies seront perdues.')) {
-    fetch('/api/users/current')
+    fetch('/users/current')
         .then(res => res.json())
         .then(data => {
             if (!data.error) {

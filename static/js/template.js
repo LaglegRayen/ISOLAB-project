@@ -6,36 +6,36 @@ class OliviaTemplate {
     }
 
     init() {
-        // Ensure navigation is consistent across all pages
-        this.setupNavigation();
+        // // Ensure navigation is consistent across all pages
+        // this.setupNavigation();
         // Set active navigation item
         this.setActiveNavItem();
         // Initialize tooltips
         this.initializeTooltips();
     }
 
-    setupNavigation() {
-        // Check if navigation exists
-        const navbar = document.querySelector('.sidebar-nav');
-        if (!navbar) return;
+    // setupNavigation() {
+    //     // Check if navigation exists
+    //     const navbar = document.querySelector('.sidebar-nav');
+    //     if (!navbar) return;
 
-        // Ensure all navigation items have proper IDs and structure
-        const navItems = navbar.querySelectorAll('a');
-        navItems.forEach(item => {
-            const href = item.getAttribute('href');
+    //     // Ensure all navigation items have proper IDs and structure
+    //     const navItems = navbar.querySelectorAll('a');
+    //     navItems.forEach(item => {
+    //         const href = item.getAttribute('href');
             
-            // Set proper IDs based on href
-            if (href === 'dashboard.html') {
-                item.id = 'nav-dashboard';
-            } else if (href === 'voir-machines.html') {
-                item.id = 'nav-machines';
-            } else if (href === 'clients.html') {
-                item.id = 'nav-clients';
-            } else if (href === '../index.html') {
-                item.id = 'nav-logout';
-            }
-        });
-    }
+    //         // Set proper IDs based on href
+    //         if (href === 'dashboard.html') {
+    //             item.id = 'nav-dashboard';
+    //         } else if (href === 'voir-machines.html') {
+    //             item.id = 'nav-machines';
+    //         } else if (href === 'clients.html') {
+    //             item.id = 'nav-clients';
+    //         } else if (href === '../index.html') {
+    //             item.id = 'nav-logout';
+    //         }
+    //     });
+    // }
 
     setActiveNavItem() {
         // Remove active class from all nav items

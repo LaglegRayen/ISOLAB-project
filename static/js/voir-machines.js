@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function checkAuthentication() {
-    fetch('/api/users/current')
+    fetch('/users/current')
         .then(res => res.json())
         .then(data => {
             if (data.error) {
@@ -45,7 +45,7 @@ async function searchMachine() {
     
     try {
         // Get all machines and find by serial number
-        const response = await fetch('/api/machines');
+        const response = await fetch('/machines');
         if (!response.ok) {
             throw new Error('Erreur lors de la recherche');
         }
@@ -90,7 +90,7 @@ async function displayMachineDetails(machineData) {
     // Get client information if clientId exists
     if (machineData.clientId) {
         try {
-            const clientResponse = await fetch(`/api/clients/${machineData.clientId}`);
+            const clientResponse = await fetch(`/clients/${machineData.clientId}`);
             if (clientResponse.ok) {
                 const clientResult = await clientResponse.json();
                 const client = clientResult.data;

@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function checkAuthentication() {
-    fetch('/api/users/current')
+    fetch('/users/current')
         .then(res => res.json())
         .then(data => {
             if (data.error) {
@@ -193,7 +193,7 @@ async function saveClient(clientData) {
         };
         
         // Send to backend API
-        const response = await fetch('/api/clients', {
+        const response = await fetch('/clients', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -232,7 +232,7 @@ function addAnotherClient() {
 
 function goToClientsList() {
     // Optionally, you can check authentication again before navigating
-    fetch('/api/users/current')
+    fetch('/users/current')
         .then(res => res.json())
         .then(data => {
             if (!data.error) {

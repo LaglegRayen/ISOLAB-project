@@ -9,7 +9,7 @@ from .firebase_config import get_db, is_firebase_available
 from .users import ROLES, require_role
 
 # Create stages blueprint
-stages_bp = Blueprint('stages', __name__, url_prefix='/api/stages')
+stages_bp = Blueprint('stages', __name__, url_prefix='/stages')
 
 @stages_bp.route('/machine/<machine_id>', methods=['GET'])
 def get_machine_stages(machine_id):
