@@ -10,6 +10,7 @@ from blueprints.users import users_bp
 from blueprints.login import login_bp
 from blueprints.stages import stages_bp
 from blueprints.dashboard import dashboard_bp
+from blueprints.workflow import workflow_bp
 import os
 from blueprints.firebase_config import initialize_firebase
 
@@ -24,6 +25,7 @@ app.register_blueprint(dashboard_bp)
 app.register_blueprint(machines_bp)
 app.register_blueprint(users_bp)
 app.register_blueprint(stages_bp)
+app.register_blueprint(workflow_bp)
 # main_bp = Blueprint('main', __name__)
 
 # Set template and static folders to match your current structure
@@ -45,6 +47,11 @@ else:
 @app.route('/')
 def home():
     return render_template('login.html')
+
+@app.route('/voir-machines.html')
+def voir_machines():
+    """Handle direct access to voir-machines.html with optional machine parameter"""
+    return render_template('voir-machines.html')
 
 
 # app = Flask(__name__)

@@ -6,10 +6,8 @@ if (typeof navigateTo !== 'function') {
         const endpointMap = {
             'dashboard': '/dashboard',
             'my-tasks': '/dashboard#myTasksContainer',
-            'voir-machines': '/machines',
+            'voir-machines': '/machines/view',
             'clients': '/clients',
-            'ajouter-client': '/ajouter-client',
-            'ajouter-machine': '/ajouter-machine',
             'users': '/users'
         };
         const target = endpointMap[page] || ('/' + page);
@@ -52,7 +50,6 @@ document.addEventListener('DOMContentLoaded', function() {
         'nav-machines': 'voir-machines',
         'nav-clients': 'clients',
         'nav-add-client': 'ajouter-client',
-        'nav-add-machine': 'ajouter-machine',
         'nav-users': 'users'
     };
     Object.entries(navMap).forEach(([id, page]) => {

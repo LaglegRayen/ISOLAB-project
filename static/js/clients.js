@@ -62,14 +62,15 @@ function displayClients(clients) {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>
-                <strong>${client.nom || '-'}</strong><br>
-                <small style="color: #65676b;">${client.prenom || '-'}</small>
+                <strong>${client.society || '-'}</strong><br>
+                <small style="color: #65676b;">Code: ${client.clientCode || '-'}</small>
             </td>
-            <td>${client.prenom || '-'}</td>
-            <td>${client.telephone || '-'}</td>
-            <td>${client.adresse || '-'}</td>
+            <td>${client.manager || '-'}</td>
+            <td>${client.phone || '-'}</td>
+            <td>${client.email || '-'}</td>
             <td>${client.location || '-'}</td>
-            <td><span class="status-badge ${getTypeClass(client.type)}">${client.type || '-'}</span></td>
+            <td><span class="status-badge ${getTypeClass(client.clientType)}">${client.clientType || '-'}</span></td>
+            <td>${client.machines ? client.machines.length : 0}</td>
             <td>
                 <button class="btn btn-primary btn-small" onclick="viewClient('${client.id}')">
                     <i class="fas fa-eye"></i> Voir
@@ -222,3 +223,77 @@ function initializeModal() {
         }
     });
 }
+
+// Add Client Modal Functions
+function openAddClientModal() {
+    document.getElementById('addClientModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+}
+
+function closeAddClientModal() {
+    document.getElementById('addClientModal').style.display = 'none';
+    document.body.style.overflow = 'auto'; // Re-enable scrolling
+    resetClientForm();
+}
+
+function resetClientForm() {
+    document.getElementById('addClientForm').reset();
+}
+
+// Submit client form
+async function submitClientForm() {
+    const formData = {
+        clientCode: document.getElementById('clientCode').value,
+        society: document.getElementById('clientSociety').value,
+        manager: document.getElementById('clientManager').value,
+        matriculeFiscale: document.getElementById('matriculeFiscale').value,
+        businessSector: document.getElementById('businessSector').value,
+        phone: document.getElementById('clientPhone').value,
+        email: document.getElementById('clientEmail').value,
+        address: document.getElementById('clientAddress').value,
+        governorat: document.getElementById('clientGovernorat').value,
+        location: document.getElementById('clientLocation').value,
+        clientType: document.getElementById('clientType').value,
+        status: document.getElementById('clientStatus').value,
+        notes: document.getElementById('clientNotes').value
+    };
+    
+    // Basic validation
+    if (!formData.clientCode || !formData.society || !formData.manager || !formData.phone || !formData.address) {
+        alert('Veuillez remplir les champs obligatoires (code client, société, gérant, téléphone, adresse)');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/clients', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify(formData)
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            alert('Client ajouté avec succès!');
+            closeAddClientModal();
+            loadClientsData(); // Refresh the clients list
+        } else {
+            alert(`Erreur: ${result.error || 'Erreur inconnue'}`);
+        }
+        
+    } catch (error) {
+        console.error('Error adding client:', error);
+        alert('Erreur lors de l\'ajout du client');
+    }
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(event) {
+    const modal = document.getElementById('addClientModal');
+    if (event.target === modal) {
+        closeAddClientModal();
+    }
+});

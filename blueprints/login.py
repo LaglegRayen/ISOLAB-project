@@ -1,57 +1,90 @@
 """
-Login Blueprint
-Handles login and logout endpoints separately from user management
+Login Blueprint - Updated for Simplified Workflow Structure
+Handles login and logout with new role and stage_access structure
 """
 
 from flask import Blueprint, request, jsonify, session
 from datetime import datetime
 from blueprints.firebase_config import get_db, is_firebase_available
-from blueprints.users import ROLES
+from google.cloud.firestore_v1.base_query import FieldFilter
+import hashlib
+
+def hash_password(password):
+    """Simple password hashing"""
+    return hashlib.sha256(password.encode()).hexdigest()
 
 login_bp = Blueprint('login', __name__, url_prefix='/')
 
 @login_bp.route('/login', methods=['POST'])
 def login():
-    """Simple login - store user ID in session"""
+    """Login with username/email and password"""
     try:
         db = get_db()
         if not is_firebase_available():
             print("Database not available")
             return jsonify({"error": "Database not available"}), 500
+        print("✅ Firebase connection established")
+        
         data = request.get_json()
-        email = data.get('email')
-        if not email:
-            return jsonify({"error": "Email required"}), 400
-        # Find user by email
+        identifier = data.get('email') or data.get('username')  # Support both email and username
+        password = data.get('password')
+        
+        if not identifier:
+            return jsonify({"error": "Email or username required"}), 400
+        
+        if not password:
+            return jsonify({"error": "Password required"}), 400
+        
+        # Find user by email or username
         users_ref = db.collection('users')
-        users = users_ref.where('email', '==', email).get()
+        
+        # Try to find by email first
+        users = users_ref.where(filter=FieldFilter("email", "==", identifier)).get()
+        
+        # If not found by email, try username
         if not users:
-            print("User not found")
-            return jsonify({"error": "User not found"}), 404
-        print(f"Found {len(users)} user(s) with email {email}")
+            users = users_ref.where(filter=FieldFilter("username", "==", identifier)).get()
+        
+        if not users:
+            print(f"User not found: {identifier}")
+            return jsonify({"error": "Invalid credentials"}), 401
+        
         user_doc = users[0]
         user_data = user_doc.to_dict()
         user_data['id'] = user_doc.id
-        # Store in session
+        
+        # Simple password verification using hash
+        hashed_input = hash_password(password)
+        if user_data.get('password') != hashed_input:
+            print(f"Invalid password for user: {identifier}")
+            return jsonify({"error": "Invalid credentials"}), 401
+        
+        # Check if user is active
+        if not user_data.get('is_active', True):
+            return jsonify({"error": "Account is deactivated"}), 403
+        
+        # Store in session with new structure
         session['user_id'] = user_doc.id
-        session['user_role'] = user_data['role']
-        session['user_name'] = user_data['name']
-        # Add role info
-        if user_data.get('role') in ROLES:
-            user_data['role_info'] = ROLES[user_data['role']]
-        print("User logged in successfully")
+        session['role'] = user_data['role']  # Changed from user_role to role
+        session['username'] = user_data.get('username', 'Unknown')
+        session['stage_access'] = user_data.get('stage_access', 'none')
+        session['first_name'] = user_data.get('first_name', 'Unknown')
+        session['last_name'] = user_data.get('last_name', 'User')
+        
+        print(f"✅ User logged in: {user_data.get('username')} ({user_data['role']}) - Stage access: {user_data.get('stage_access')}")
+        
+        # Remove password from response
+        user_data.pop('password', None)
+        
         return jsonify({
             "message": "Login successful",
             "user": user_data
         })
+        
     except Exception as e:
         print(f"Login failed: {e}") 
         return jsonify({"error": str(e)}), 500
-    
 
-
-
-# Logout endpoint
 @login_bp.route('/logout', methods=['POST'])
 def logout():
     """Logout - clear session"""

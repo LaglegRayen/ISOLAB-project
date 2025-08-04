@@ -40,25 +40,37 @@ document.addEventListener('DOMContentLoaded', function() {
 function handleLogin() {
     
     const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    
     // Basic validation
     if (!email) {
-        showError('Veuillez entrer votre email');
+        showError('Veuillez entrer votre email ou nom d\'utilisateur');
         return;
     }
+    
+    if (!password) {
+        showError('Veuillez entrer votre mot de passe');
+        return;
+    }
+    
     // Show loading state
     const submitBtn = document.querySelector('button[type="submit"]');
     const originalText = submitBtn.innerHTML;
     submitBtn.innerHTML = 'Connexion...';
     submitBtn.disabled = true;
+    
     // Call login API
     console.log('handleLogin called');
     fetch('http://127.0.0.1:5000/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
+        credentials: 'include',  // Important for session cookies
+        body: JSON.stringify({ 
+            email: email,
+            password: password 
+        })
     })
     .then(res => {
-        console.log('Fetch response received', res);
         return res.json().then(data => {
             console.log('JSON parsed', data);
             return { ok: res.ok, data };
