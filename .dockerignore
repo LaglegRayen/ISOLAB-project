@@ -1,0 +1,124 @@
+# ISOLAB Agri Support - Docker ignore file
+# Exclude unnecessary files from Docker build context
+
+# IMPORTANT: Include Firebase service account key
+!config/
+!config/*.json
+
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env
+pip-log.txt
+pip-delete-this-directory.txt
+.tox
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git
+.mypy_cache
+.pytest_cache
+.hypothesis
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Environment files (copy these manually if needed)
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Temporary files
+*.tmp
+*.temp
+
+# Documentation
+*.md
+README*
+docs/
+
+# Test files
+test_*.py
+*_test.py
+tests/
+
+# Development tools
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Firebase export data
+firestore_export_*/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Node modules (if any)
+node_modules/
+
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Frontend static assets (exclude for backend-only deployment)
+static/
+*.html
+*.css
+*.js
+*.scss
+*.sass
+*.less
+
+# Images and media files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.svg
+*.webp
+*.bmp
+*.tiff
+
+# Frontend build tools and dependencies
+package.json
+package-lock.json
+yarn.lock
+webpack.config.js
+gulpfile.js

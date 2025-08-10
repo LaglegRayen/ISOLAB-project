@@ -27,7 +27,12 @@ def get_user_role():
 @login_required
 def get_workflows():
     """Get all workflows with their current status - filtered by user role"""
+    print("DEBUG: Getting workflows")
+    print(f"DEBUG: User session: {session.get('user_id')}")
+    print(f"DEBUG: User role: {session.get('user_role')}")
+    
     if not is_firebase_available():
+        print("DEBUG: Database not available")
         return jsonify({'error': 'Database not available'}), 500
     
     try:
@@ -35,12 +40,16 @@ def get_workflows():
         user_role = session.get('user_role', '').lower()
         user_id = session.get('user_id')
         
+        print(f"DEBUG: Fetching workflows for user {user_id} with role {user_role}")
+        
         # Get all machines with their workflow instances
         machines_ref = db.collection('machines')
         machines = machines_ref.stream()
         
         workflows = []
+        machine_count = 0
         for machine in machines:
+            machine_count += 1
             machine_data = machine.to_dict()
             workflow_instance = machine_data.get('workflow_instance')
             

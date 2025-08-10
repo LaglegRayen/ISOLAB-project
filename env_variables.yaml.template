@@ -1,0 +1,25 @@
+# Environment variables template for ISOLAB Agri Support
+# Copy this file to env_variables.yaml and fill in your actual values
+
+env_variables:
+  # Flask Configuration
+  SECRET_KEY: "your-super-secret-key-here"
+  FLASK_ENV: "production"
+  FLASK_DEBUG: "False"
+  
+  # Firebase/Google Cloud Configuration
+  GOOGLE_CLOUD_PROJECT: "your-firebase-project-id"
+  GOOGLE_APPLICATION_CREDENTIALS: "config/your-firebase-service-account.json"
+  
+  # Database Configuration (if using other databases)
+  # DATABASE_URL: "your-database-connection-string"
+  
+  # API Keys (if needed)
+  # API_KEY: "your-api-key"
+  
+  # Custom Application Settings
+  # MAX_UPLOAD_SIZE: "16777216"  # 16MB
+  # SESSION_TIMEOUT: "3600"      # 1 hour
+
+# Note: Never commit this file with real values to version control
+# Add env_variables.yaml to your .gitignore file

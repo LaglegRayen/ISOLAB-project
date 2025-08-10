@@ -1,0 +1,65 @@
+{
+  "4JWXrDTf0l2Bmj8QA1fg": {
+    "name": "installation",
+    "label": "Installation",
+    "required_role": "installation_tech",
+    "depends_on": [
+      "delivery"
+    ],
+    "order": 5,
+    "created_at": "2025-08-03T11:28:51.673739+00:00",
+    "description": "Installation et mise en service chez le client",
+    "estimated_duration_hours": 6,
+    "is_active": true
+  },
+  "6L2Yr21RCzzQxAcjJfSn": {
+    "name": "delivery",
+    "label": "Livraison",
+    "required_role": "delivery_tech",
+    "depends_on": [
+      "testing"
+    ],
+    "order": 4,
+    "created_at": "2025-08-03T11:28:51.673739+00:00",
+    "description": "Préparation et livraison chez le client",
+    "estimated_duration_hours": 4,
+    "is_active": true
+  },
+  "A0MFDl83DPVdOAaIj9Ti": {
+    "name": "material_collection",
+    "label": "Collecte des matériaux",
+    "required_role": "supervisor",
+    "depends_on": [],
+    "order": 1,
+    "created_at": "2025-08-03T11:28:51.673739+00:00",
+    "description": "Collection et préparation des matériaux nécessaires",
+    "estimated_duration_hours": 4,
+    "is_active": true
+  },
+  "oHh8N6KjZQwg0UavRKXE": {
+    "name": "testing",
+    "label": "Tests et validation",
+    "required_role": "testing_tech",
+    "depends_on": [
+      "assembly"
+    ],
+    "order": 3,
+    "created_at": "2025-08-03T11:28:51.673739+00:00",
+    "description": "Tests de fonctionnement et validation qualité",
+    "estimated_duration_hours": 6,
+    "is_active": true
+  },
+  "pUwFjroyKk577ZXs7HUe": {
+    "name": "assembly",
+    "label": "Assemblage",
+    "required_role": "assembly_tech",
+    "depends_on": [
+      "material_collection"
+    ],
+    "order": 2,
+    "created_at": "2025-08-03T11:28:51.673739+00:00",
+    "description": "Assemblage des composants de la machine",
+    "estimated_duration_hours": 8,
+    "is_active": true
+  }
+}

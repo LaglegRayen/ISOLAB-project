@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Utilisateurs - ISOLAB Agri Support</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2 class="sidebar-title">ISOLAB Agri Support</h2>
+                <p class="sidebar-subtitle">Système de gestion</p>
+            </div>
+            <ul class="sidebar-nav">
+                <li><a href="#" id="nav-dashboard"><i class="fas fa-home"></i> Tableau de bord</a></li>
+                <li><a href="#" id="nav-my-tasks"><i class="fas fa-tasks"></i> Mes tâches</a></li>
+                <li><a href="#" id="nav-machines"><i class="fas fa-cogs"></i> Machines</a></li>
+                <li id="nav-clients-item"><a href="#" id="nav-clients"><i class="fas fa-users"></i> Clients</a></li>
+                <li id="nav-users-item"><a href="#" id="nav-users" class="active"><i class="fas fa-user-cog"></i> Utilisateurs</a></li>
+                <li><a href="#" id="nav-logout" onclick="handleLogout(); return false;"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">Gestion des Utilisateurs</h1>
+                <p class="page-subtitle">Gérez les utilisateurs et leurs accès au système (Accès administrateur uniquement)</p>
+            </div>
+
+            <!-- Search and Filter Section -->
+            <div class="search-section">
+                <div class="search-input-group">
+                    <input type="text" id="userSearch" class="search-bar" placeholder="Rechercher par nom, email, rôle...">
+                    <button class="btn btn-primary search-btn" onclick="searchUsers()">
+                        <i class="fas fa-search"></i> Rechercher
+                    </button>
+                    <button class="btn btn-success" onclick="openAddUserModal()">
+                        <i class="fas fa-user-plus"></i> Ajouter un Utilisateur
+                    </button>
+                </div>
+                
+                <div class="search-filters">
+                    <select id="roleFilter" class="filter-select">
+                        <option value="">Tous les rôles</option>
+                        <option value="admin">Administrator</option>
+                        <option value="supervisor">Supervisor</option>
+                        <option value="assembly_tech">Assembly Technician</option>
+                        <option value="testing_tech">Testing Technician</option>
+                        <option value="delivery_tech">Delivery Technician</option>
+                        <option value="installation_tech">Installation Technician</option>
+                    </select>
+                    <select id="statusFilter" class="filter-select">
+                        <option value="">Tous les statuts</option>
+                        <option value="true">Actif</option>
+                        <option value="false">Inactif</option>
+                    </select>
+                    <select id="departmentFilter" class="filter-select">
+                        <option value="">Tous les départements</option>
+                        <option value="technique">Technique</option>
+                        <option value="commercial">Commercial</option>
+                        <option value="administration">Administration</option>
+                        <option value="maintenance">Maintenance</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Users Table -->
+            <div class="table-container">
+                <h3 style="padding: 20px; margin: 0; border-bottom: 1px solid #e4e6ea;">
+                    Liste des Utilisateurs
+                    <span class="total-count" id="totalUsersCount">0 utilisateurs</span>
+                </h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nom complet</th>
+                            <th>Nom d'utilisateur</th>
+                            <th>Email</th>
+                            <th>Rôle</th>
+                            <th>Département</th>
+                            <th>Téléphone</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- Data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- User Details Modal -->
+            <div id="userModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 id="modalTitle">Détails de l'Utilisateur</h3>
+                        <button class="close-modal" onclick="closeUserModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="user-details">
+                            <div class="user-info-grid">
+                                <div class="user-info-item">
+                                    <label>Nom complet:</label>
+                                    <span id="modalUserFullName">-</span>
+                                </div>
+                                <div class="user-info-item">
+                                    <label>Nom d'utilisateur:</label>
+                                    <span id="modalUsername">-</span>
+                                </div>
+                                <div class="user-info-item">
+                                    <label>Email:</label>
+                                    <span id="modalUserEmail">-</span>
+                                </div>
+                                <div class="user-info-item">
+                                    <label>Rôle:</label>
+                                    <span id="modalUserRole">-</span>
+                                </div>
+                                <div class="user-info-item">
+                                    <label>Département:</label>
+                                    <span id="modalUserDepartment">-</span>
+                                </div>
+                                <div class="user-info-item">
+                                    <label>Téléphone:</label>
+                                    <span id="modalUserPhone">-</span>
+                                </div>
+                                <div class="user-info-item">
+                                    <label>Spécialisation:</label>
+                                    <span id="modalUserSpecialization">-</span>
+                                </div>
+                                <div class="user-info-item">
+                                    <label>Accès aux étapes:</label>
+                                    <span id="modalUserStageAccess">-</span>
+                                </div>
+                                <div class="user-info-item">
+                                    <label>Statut:</label>
+                                    <span id="modalUserStatus">-</span>
+                                </div>
+                                <div class="user-info-item">
+                                    <label>Créé le:</label>
+                                    <span id="modalUserCreatedAt">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeUserModal()">Fermer</button>
+                        <button class="btn btn-primary" onclick="editUser()">Modifier</button>
+                        <button class="btn btn-danger" onclick="deleteUser()">Supprimer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-plus"></i> Ajouter un nouveau utilisateur</h3>
+                <button class="close-modal" onclick="closeAddUserModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addUserForm">
+                    <!-- Personal Information -->
+                    <div class="form-section">
+                        <h4 class="section-title"><i class="fas fa-user"></i> Informations personnelles</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-user"></i> Prénom *</label>
+                                <input type="text" id="firstName" name="firstName" class="form-input" required placeholder="Ex: Ahmed">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-user"></i> Nom de famille *</label>
+                                <input type="text" id="lastName" name="lastName" class="form-input" required placeholder="Ex: Ben Ali">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-at"></i> Nom d'utilisateur *</label>
+                                <input type="text" id="username" name="username" class="form-input" required placeholder="Ex: ahmed.benali">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-envelope"></i> Email *</label>
+                                <input type="email" id="email" name="email" class="form-input" required placeholder="Ex: ahmed@isolab.com">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Account Information -->
+                    <div class="form-section">
+                        <h4 class="section-title"><i class="fas fa-key"></i> Informations du compte</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-lock"></i> Mot de passe *</label>
+                                <input type="password" id="password" name="password" class="form-input" required placeholder="Mot de passe sécurisé">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-user-tag"></i> Rôle *</label>
+                                <select id="role" name="role" class="form-input" required>
+                                    <option value="">Sélectionner un rôle...</option>
+                                    <option value="admin">Administrator</option>
+                                    <option value="supervisor">Supervisor</option>
+                                    <option value="assembly_tech">Assembly Technician</option>
+                                    <option value="testing_tech">Testing Technician</option>
+                                    <option value="delivery_tech">Delivery Technician</option>
+                                    <option value="installation_tech">Installation Technician</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Professional Information -->
+                    <div class="form-section">
+                        <h4 class="section-title"><i class="fas fa-briefcase"></i> Informations professionnelles</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-building"></i> Département</label>
+                                <select id="department" name="department" class="form-input">
+                                    <option value="">Sélectionner...</option>
+                                    <option value="technique">Technique</option>
+                                    <option value="commercial">Commercial</option>
+                                    <option value="administration">Administration</option>
+                                    <option value="maintenance">Maintenance</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-phone"></i> Téléphone</label>
+                                <input type="tel" id="phone" name="phone" class="form-input" placeholder="Ex: 21612345678">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-tools"></i> Spécialisation</label>
+                            <input type="text" id="specialization" name="specialization" class="form-input" placeholder="Ex: Machines d'irrigation, Assemblage électronique">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeAddUserModal()">Annuler</button>
+                <button type="button" class="btn btn-success" onclick="submitUserForm()">
+                    <i class="fas fa-save"></i> Créer l'utilisateur
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div id="editUserModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-edit"></i> Modifier l'utilisateur</h3>
+                <button class="close-modal" onclick="closeEditUserModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editUserForm">
+                    <!-- Personal Information -->
+                    <div class="form-section">
+                        <h4 class="section-title"><i class="fas fa-user"></i> Informations personnelles</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-user"></i> Prénom *</label>
+                                <input type="text" id="editFirstName" name="firstName" class="form-input" required placeholder="Ex: Ahmed">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-user"></i> Nom de famille *</label>
+                                <input type="text" id="editLastName" name="lastName" class="form-input" required placeholder="Ex: Ben Ali">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-at"></i> Nom d'utilisateur *</label>
+                                <input type="text" id="editUsername" name="username" class="form-input" required placeholder="Ex: ahmed.benali" readonly>
+                                <small style="color: #65676b;">Le nom d'utilisateur ne peut pas être modifié</small>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-envelope"></i> Email *</label>
+                                <input type="email" id="editEmail" name="email" class="form-input" required placeholder="Ex: ahmed@isolab.com" readonly>
+                                <small style="color: #65676b;">L'email ne peut pas être modifié</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Account Information -->
+                    <div class="form-section">
+                        <h4 class="section-title"><i class="fas fa-key"></i> Informations du compte</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-lock"></i> Nouveau mot de passe</label>
+                                <input type="password" id="editPassword" name="password" class="form-input" placeholder="Laisser vide pour ne pas changer">
+                                <small style="color: #65676b;">Laisser vide si vous ne voulez pas changer le mot de passe</small>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-user-tag"></i> Rôle *</label>
+                                <select id="editRole" name="role" class="form-input" required>
+                                    <option value="">Sélectionner un rôle...</option>
+                                    <option value="admin">Administrator</option>
+                                    <option value="supervisor">Supervisor</option>
+                                    <option value="assembly_tech">Assembly Technician</option>
+                                    <option value="testing_tech">Testing Technician</option>
+                                    <option value="delivery_tech">Delivery Technician</option>
+                                    <option value="installation_tech">Installation Technician</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-toggle-on"></i> Statut du compte</label>
+                            <select id="editIsActive" name="isActive" class="form-input">
+                                <option value="true">Actif</option>
+                                <option value="false">Inactif</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Professional Information -->
+                    <div class="form-section">
+                        <h4 class="section-title"><i class="fas fa-briefcase"></i> Informations professionnelles</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-building"></i> Département</label>
+                                <select id="editDepartment" name="department" class="form-input">
+                                    <option value="">Sélectionner...</option>
+                                    <option value="technique">Technique</option>
+                                    <option value="commercial">Commercial</option>
+                                    <option value="administration">Administration</option>
+                                    <option value="maintenance">Maintenance</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-phone"></i> Téléphone</label>
+                                <input type="tel" id="editPhone" name="phone" class="form-input" placeholder="Ex: 21612345678">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-tools"></i> Spécialisation</label>
+                            <input type="text" id="editSpecialization" name="specialization" class="form-input" placeholder="Ex: Machines d'irrigation, Assemblage électronique">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeEditUserModal()">Annuler</button>
+                <button type="button" class="btn btn-primary" onclick="submitEditUserForm()">
+                    <i class="fas fa-save"></i> Sauvegarder les modifications
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/template.js"></script>
+    <script src="/js/sidebar-nav.js"></script>
+    <script src="/js/navigation.js"></script>
+    <script src="/js/users.js"></script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+{
+  "admin": {
+    "name": "Administrateur",
+    "stages": [
+      "material_collection",
+      "assembly",
+      "testing",
+      "delivery",
+      "installation",
+      "maintenance",
+      "follow_up"
+    ],
+    "level": 5
+  },
+  "assembly_technician": {
+    "name": "Technicien Assemblage",
+    "stages": [
+      "assembly",
+      "testing"
+    ],
+    "level": 2
+  },
+  "delivery_manager": {
+    "name": "Responsable Livraison",
+    "stages": [
+      "delivery",
+      "installation"
+    ],
+    "level": 3
+  },
+  "maintenance_staff": {
+    "name": "Service Maintenance",
+    "stages": [
+      "maintenance",
+      "follow_up"
+    ],
+    "level": 2
+  },
+  "material_operator": {
+    "name": "Opérateur Matériaux",
+    "stages": [
+      "material_collection"
+    ],
+    "level": 1
+  }
+}

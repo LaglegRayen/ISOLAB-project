@@ -15,14 +15,20 @@ stages_bp = Blueprint('stages', __name__, url_prefix='/stages')
 def get_stage_definitions():
     """Get all stage definitions with dependencies"""
     try:
+        print("DEBUG: Getting stage definitions")
+        print(f"DEBUG: User session: {session.get('user_id')}")
+        
         db = get_db()
         if not is_firebase_available():
+            print("DEBUG: Database not available")
             return jsonify({"error": "Database not available"}), 500
         
         # Check if user is logged in
         if 'user_id' not in session:
+            print("DEBUG: Authentication required - no user_id in session")
             return jsonify({"error": "Authentication required"}), 401
         
+        print("DEBUG: Fetching stages from database")
         stages_ref = db.collection('stages')
         stages_docs = stages_ref.order_by('order').stream()
         
@@ -32,21 +38,28 @@ def get_stage_definitions():
             stage_data['id'] = doc.id
             stages.append(stage_data)
         
+        print(f"DEBUG: Found {len(stages)} stages")
         return jsonify({"stages": stages})
         
     except Exception as e:
+        print(f"DEBUG: Error getting stage definitions: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 @stages_bp.route('/machine/<machine_id>/current', methods=['GET'])
 def get_machine_current_stage(machine_id):
     """Get current stage information for a specific machine"""
     try:
+        print(f"DEBUG: Getting current stage for machine: {machine_id}")
+        print(f"DEBUG: User session: {session.get('user_id')}")
+        
         db = get_db()
         if not is_firebase_available():
+            print("DEBUG: Database not available")
             return jsonify({"error": "Database not available"}), 500
         
         # Check if user is logged in
         if 'user_id' not in session:
+            print("DEBUG: Authentication required - no user_id in session")
             return jsonify({"error": "Authentication required"}), 401
         
         user_role = session.get('role', '')
@@ -303,16 +316,25 @@ def get_my_tasks():
 def get_dashboard_data():
     """Get dashboard data based on user role"""
     try:
+        print("DEBUG: Getting dashboard data")
+        print(f"DEBUG: User session: {session.get('user_id')}")
+        print(f"DEBUG: User role: {session.get('role')}")
+        print(f"DEBUG: Stage access: {session.get('stage_access')}")
+        
         db = get_db()
         if not is_firebase_available():
+            print("DEBUG: Database not available")
             return jsonify({"error": "Database not available"}), 500
         
         # Check if user is logged in
         if 'user_id' not in session:
+            print("DEBUG: Authentication required - no user_id in session")
             return jsonify({"error": "Authentication required"}), 401
         
         user_id = session.get('user_id')
         user_role = session.get('role', '')
+        
+        print(f"DEBUG: Fetching dashboard data for user {user_id} with role {user_role}")
         
         dashboard_data = {
             'my_pending_tasks': 0,

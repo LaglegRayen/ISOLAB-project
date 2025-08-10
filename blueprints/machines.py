@@ -3,7 +3,7 @@ Machines CRUD Blueprint - Updated for Simplified Workflow Structure
 Handles machine operations with simple current_stage approach
 """
 
-from flask import Blueprint, request, jsonify, session, render_template
+from flask import Blueprint, request, jsonify, session, render_template, redirect
 from datetime import datetime
 from .firebase_config import get_db, is_firebase_available
 from .users import require_role
@@ -11,38 +11,53 @@ from .users import require_role
 # Create machines blueprint
 machines_bp = Blueprint('machines', __name__, url_prefix='/machines')
 
+# Frontend URL configuration
+FRONTEND_URL = 'https://isolab-support.firebaseapp.com'
+
 @machines_bp.route('/view', methods=['GET'])
 def view_machines():
-    """Render the machines view page"""
-    return render_template('voir-machines.html')
+    """Redirect to the machines view page on frontend"""
+    return redirect(f'{FRONTEND_URL}/voir-machines.html')
 
 @machines_bp.route('', methods=['GET'])
 def get_all_machines():
     """Get all machines filtered by user role and stage access"""
     try:
+        print("DEBUG: Getting all machines")
+        print(f"DEBUG: User session: {session.get('user_id')}")
+        print(f"DEBUG: User role: {session.get('role')}")
+        print(f"DEBUG: Stage access: {session.get('stage_access')}")
+        
         db = get_db()
         if not is_firebase_available():
+            print("DEBUG: Database not available")
             return jsonify({"error": "Database not available"}), 500
         
         # Check if user is logged in
         if 'user_id' not in session:
+            print("DEBUG: Authentication required - no user_id in session")
             return jsonify({"error": "Authentication required"}), 401
         
         user_id = session.get('user_id')
         user_role = session.get('role', '')
         stage_access = session.get('stage_access', '')
         
+        print(f"DEBUG: Fetching machines for user {user_id} with role {user_role}")
+        
         machines_ref = db.collection('machines')
         
         if user_role == 'admin':
             # Admin sees all machines
+            print("DEBUG: Admin user - fetching all machines")
             machines_docs = machines_ref.stream()
         else:
             # Regular users see machines in their stage or assigned to them
+            print(f"DEBUG: Regular user - filtering by stage access: {stage_access}")
             machines_docs = []
             
             # Get machines in user's accessible stage
             if stage_access and stage_access != 'all':
+                print(f"DEBUG: Fetching machines for stage: {stage_access}")
                 stage_machines = machines_ref.where('current_stage', '==', stage_access).stream()
                 machines_docs.extend(stage_machines)
             
@@ -79,21 +94,30 @@ def get_all_machines():
             
             machines.append(machine_data)
         
+        print(f"DEBUG: Found {len(machines)} machines total")
+        print(f"DEBUG: Returning machine data for user {user_id}")
+        
         return jsonify({"data": machines})
         
     except Exception as e:
+        print(f"DEBUG: Error getting machines: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 @machines_bp.route('/<machine_id>', methods=['GET'])
 def get_machine(machine_id):
     """Get specific machine details with history"""
     try:
+        print(f"DEBUG: Getting machine details for: {machine_id}")
+        print(f"DEBUG: User session: {session.get('user_id')}")
+        
         db = get_db()
         if not is_firebase_available():
+            print("DEBUG: Database not available")
             return jsonify({"error": "Database not available"}), 500
         
         # Check if user is logged in
         if 'user_id' not in session:
+            print("DEBUG: Authentication required - no user_id in session")
             return jsonify({"error": "Authentication required"}), 401
         
         user_id = session.get('user_id')

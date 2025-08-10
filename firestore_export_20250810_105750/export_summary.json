@@ -1,0 +1,15 @@
+{
+  "export_timestamp": "2025-08-10T10:57:51.854959",
+  "total_collections": 6,
+  "successful_collections": 6,
+  "total_documents": 49,
+  "collections": [
+    "clients",
+    "machine_history",
+    "machines",
+    "roles",
+    "stages",
+    "users"
+  ],
+  "export_directory": "firestore_export_20250810_105750"
+}

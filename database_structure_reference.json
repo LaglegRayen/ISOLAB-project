@@ -1,0 +1,236 @@
+{
+  "database_structure": {
+    "collections": [
+      "users",
+      "clients", 
+      "machines",
+      "stages",
+      "machine_history"
+    ]
+  },
+  
+  "users_collection": {
+    "description": "User accounts with role-based access",
+    "required_fields": [
+      "username",
+      "email", 
+      "password",
+      "role",
+      "first_name",
+      "last_name"
+    ],
+    "example_document": {
+      "username": "example_user",
+      "email": "user@isolab.com",
+      "password": "sha256_hashed_password",
+      "role": "testing_tech",
+      "first_name": "Ahmed",
+      "last_name": "Ben Ali",
+      "department": "Quality",
+      "phone": "+216 20 123 456",
+      "created_at": "2025-08-09T10:00:00Z",
+      "is_active": true,
+      "stage_access": "testing",
+      "specialization": "Quality Control"
+    },
+    "available_roles": [
+      "admin",
+      "supervisor", 
+      "assembly_tech",
+      "testing_tech",
+      "delivery_tech",
+      "installation_tech"
+    ]
+  },
+  
+  "clients_collection": {
+    "description": "Client information for machine orders",
+    "required_fields": [
+      "clientName",
+      "clientSociety",
+      "clientEmail",
+      "clientPhone"
+    ],
+    "example_document": {
+      "clientName": "Mohamed Abdellaoui",
+      "clientSociety": "Ferme Abdellaoui",
+      "clientEmail": "m.abdellaoui@email.com",
+      "clientPhone": "21907382",
+      "clientAddress": "Route de Mahres, Sfax",
+      "clientLocation": "Sfax",
+      "dateAdded": "2025-08-09T10:00:00Z",
+      "created_by": "admin",
+      "is_active": true
+    }
+  },
+  
+  "machines_collection": {
+    "description": "Machine records with current workflow stage",
+    "required_fields": [
+      "serialNumber",
+      "ficheNumber",
+      "machineType",
+      "clientId",
+      "current_stage"
+    ],
+    "example_document": {
+      "serialNumber": "OLIVIA-009",
+      "ficheNumber": "FT-009",
+      "machineType": "Olivia Standard",
+      "clientId": "document_id_from_clients_collection",
+      "clientName": "Mohamed Abdellaoui",
+      "clientSociety": "Ferme Abdellaoui",
+      "status": "En cours",
+      "current_stage": "assembly",
+      "current_stage_label": "Assemblage",
+      "assigned_user_id": "document_id_from_users_collection",
+      "assigned_username": "assembly_tech",
+      "stage_started_at": "2025-08-09T08:00:00Z",
+      "prixHT": 95000,
+      "prixTTC": 113050,
+      "paymentStatus": "En cours",
+      "paymentType": "Crédit",
+      "facturation": "Non facturée",
+      "confirmation": "Confirmée",
+      "remarques": "Machine standard pour olives",
+      "dateAdded": "2025-08-05T10:30:00Z",
+      "dateUpdated": "2025-08-09T08:00:00Z",
+      "created_by": "admin",
+      "updated_at": "2025-08-09T08:00:00Z"
+    },
+    "available_machine_types": [
+      "Olivia Standard",
+      "Olivia Premium", 
+      "Olivia Compact"
+    ],
+    "available_stages": [
+      "material_collection",
+      "assembly",
+      "testing", 
+      "delivery",
+      "installation"
+    ],
+    "payment_statuses": [
+      "En cours",
+      "Payé",
+      "En attente"
+    ],
+    "payment_types": [
+      "Crédit",
+      "Espèces",
+      "Virement"
+    ]
+  },
+  
+  "stages_collection": {
+    "description": "Stage definitions with dependencies and requirements",
+    "example_document": {
+      "name": "assembly",
+      "label": "Assemblage",
+      "order": 2,
+      "estimated_duration_hours": 8,
+      "depends_on": ["material_collection"],
+      "required_role": "assembly_tech",
+      "description": "Assemblage des composants de la machine",
+      "created_at": "2025-08-09T10:00:00Z",
+      "is_active": true
+    }
+  },
+  
+  "machine_history_collection": {
+    "description": "History of completed machine stages",
+    "example_document": {
+      "machine_id": "document_id_from_machines_collection",
+      "machine_serial": "OLIVIA-009",
+      "stage_name": "assembly",
+      "stage_label": "Assemblage", 
+      "status": "completed",
+      "assigned_user_id": "document_id_from_users_collection",
+      "assigned_username": "assembly_tech",
+      "started_at": "2025-08-07T08:00:00Z",
+      "completed_at": "2025-08-09T16:30:00Z",
+      "duration_hours": 8.5,
+      "remarks": "Assemblage terminé avec succès",
+      "created_at": "2025-08-09T16:30:00Z"
+    }
+  },
+  
+  "testing_examples": {
+    "new_user": {
+      "username": "new_technician",
+      "email": "new@isolab.com",
+      "password": "use_hash_password_function",
+      "role": "assembly_tech",
+      "first_name": "Fatma",
+      "last_name": "Kallel",
+      "department": "Production",
+      "phone": "+216 25 999 888",
+      "created_at": "current_timestamp",
+      "is_active": true,
+      "stage_access": "assembly",
+      "specialization": "Machine Assembly"
+    },
+    
+    "new_client": {
+      "clientName": "Nadia Cherif",
+      "clientSociety": "Exploitation Moderne Cherif",
+      "clientEmail": "nadia@exploit-cherif.tn",
+      "clientPhone": "97123456",
+      "clientAddress": "Zone Agricole, Gafsa",
+      "clientLocation": "Gafsa", 
+      "dateAdded": "current_timestamp",
+      "created_by": "admin",
+      "is_active": true
+    },
+    
+    "new_machine": {
+      "serialNumber": "OLIVIA-NEW-001",
+      "ficheNumber": "FT-NEW-001",
+      "machineType": "Olivia Premium",
+      "clientId": "replace_with_actual_client_id",
+      "clientName": "Nadia Cherif",
+      "clientSociety": "Exploitation Moderne Cherif",
+      "status": "En cours",
+      "current_stage": "material_collection",
+      "current_stage_label": "Collecte des matériaux",
+      "assigned_user_id": "replace_with_supervisor_user_id",
+      "assigned_username": "supervisor",
+      "stage_started_at": "current_timestamp",
+      "prixHT": 120000,
+      "prixTTC": 142800,
+      "paymentStatus": "En cours",
+      "paymentType": "Virement",
+      "facturation": "Non facturée",
+      "confirmation": "Confirmée",
+      "remarques": "Nouvelle commande machine premium",
+      "dateAdded": "current_timestamp",
+      "dateUpdated": "current_timestamp", 
+      "created_by": "admin",
+      "updated_at": "current_timestamp"
+    }
+  },
+  
+  "api_endpoints": {
+    "dashboard_data": "GET /stages/dashboard",
+    "my_tasks": "GET /stages/my-tasks", 
+    "recent_activities": "GET /stages/recent-activities",
+    "validate_machine": "POST /stages/{machine_id}/validate",
+    "machine_details": "GET /machines/{machine_id}",
+    "all_machines": "GET /machines/",
+    "create_machine": "POST /machines/",
+    "all_clients": "GET /clients/",
+    "create_client": "POST /clients/",
+    "current_user": "GET /users/current",
+    "login": "POST /users/login"
+  },
+  
+  "manual_testing_steps": [
+    "1. Use Firebase Console to add documents to collections",
+    "2. Run add_test_data.py script to generate sample data",
+    "3. Login with test credentials to verify functionality",
+    "4. Test CRUD operations for users, clients, machines",
+    "5. Test workflow validation and stage progression",
+    "6. Verify dashboard statistics and recent activities",
+    "7. Test role-based access control"
+  ]
+}

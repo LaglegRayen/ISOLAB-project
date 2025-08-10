@@ -3,13 +3,16 @@ Users Blueprint - Updated for Simplified Workflow Structure
 Handles user authentication and role-based access with stage assignments
 """
 
-from flask import Blueprint, request, jsonify, session
+from flask import Blueprint, request, jsonify, session, render_template, redirect, url_for
 from datetime import datetime
 from .firebase_config import get_db, is_firebase_available
 import hashlib
 
 # Create users blueprint
 users_bp = Blueprint('users', __name__, url_prefix='/users')
+
+# Frontend URL configuration
+FRONTEND_URL = 'https://isolab-support.firebaseapp.com/'
 
 # Define roles for the new simplified structure
 ROLES = {
@@ -41,22 +44,47 @@ def require_role(required_role):
         return decorated_function
     return decorator
 
+@users_bp.route('/', methods=['GET'])
+def users_page():
+    """Serve the users management page (admin only)"""
+    if 'user_id' not in session:
+        return redirect(f'{FRONTEND_URL}/login.html')
+    
+    user_role = session.get('role', '')
+    if user_role != 'admin':
+        # Redirect non-admin users to dashboard with an error message
+        return redirect(f'{FRONTEND_URL}/dashboard.html?error=access_denied')
+    
+    return redirect(f'{FRONTEND_URL}/users.html')
+
 @users_bp.route('/current', methods=['GET'])
 def get_current_user():
     """Get current logged-in user information"""
     try:
+        print("DEBUG: /users/current endpoint called")
+        print(f"DEBUG: Session data: {dict(session)}")
+        print(f"DEBUG: Session has user_id: {'user_id' in session}")
+        print(f"DEBUG: User ID value: {session.get('user_id', 'NOT FOUND')}")
+        print(f"DEBUG: Request headers: {dict(request.headers)}")
+        print(f"DEBUG: Request cookies: {request.cookies}")
+        
         if 'user_id' not in session:
+            print("DEBUG: No user_id in session - returning 401")
             return jsonify({"error": "Not authenticated"}), 401
         
         db = get_db()
         if not is_firebase_available():
+            print("DEBUG: Database not available")
             return jsonify({"error": "Database not available"}), 500
         
         user_id = session['user_id']
+        print(f"DEBUG: Looking up user: {user_id}")
+        
         user_ref = db.collection('users').document(user_id)
         user_doc = user_ref.get()
         
         if not user_doc.exists:
+            print(f"DEBUG: User {user_id} not found in database")
             session.clear()
             return jsonify({"error": "User not found"}), 404
         
@@ -71,22 +99,31 @@ def get_current_user():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@users_bp.route('', methods=['GET'])
+@users_bp.route('/all', methods=['GET'])
 def get_all_users():
     """Get all users (admin only)"""
     try:
+        print("DEBUG: get_all_users endpoint called")
+        print(f"DEBUG: Session data: {dict(session)}")
+        print(f"DEBUG: User ID: {session.get('user_id')}")
+        print(f"DEBUG: User role: {session.get('role')}")
+        
         db = get_db()
         if not is_firebase_available():
+            print("DEBUG: Database not available")
             return jsonify({"error": "Database not available"}), 500
         
         # Check if user is logged in and is admin
         if 'user_id' not in session:
+            print("DEBUG: No user_id in session - authentication required")
             return jsonify({"error": "Authentication required"}), 401
         
         user_role = session.get('role', '')
         if user_role != 'admin':
+            print(f"DEBUG: User role '{user_role}' is not admin - access denied")
             return jsonify({"error": "Admin access required"}), 403
         
+        print("DEBUG: Fetching users from database")
         users_ref = db.collection('users')
         users_docs = users_ref.stream()
         
@@ -98,9 +135,11 @@ def get_all_users():
             user_data.pop('password', None)
             users.append(user_data)
         
+        print(f"DEBUG: Found {len(users)} users")
         return jsonify({"users": users})
         
     except Exception as e:
+        print(f"DEBUG: Error in get_all_users: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 @users_bp.route('/<user_id>', methods=['GET'])

@@ -1,0 +1,57 @@
+{
+  "4ilfVxEJhvaugC8px276": {
+    "dateAdded": "2025-07-09T11:28:52.721567+00:00",
+    "clientLocation": "Sousse",
+    "created_by": "admin",
+    "clientName": "Amina Ben Salem",
+    "clientAddress": "Zone Industrielle, Sousse",
+    "is_active": true,
+    "clientPhone": "22156789",
+    "clientSociety": "Exploitation Ben Salem",
+    "clientEmail": "amina.bensalem@agricultural.tn"
+  },
+  "9zg0Jo6lPPotZdRRRe3P": {
+    "dateAdded": "2025-07-14T11:28:52.721567+00:00",
+    "clientLocation": "Manouba",
+    "created_by": "admin",
+    "clientName": "Karim Jemli",
+    "clientAddress": "Douar Hicher, Manouba",
+    "is_active": true,
+    "clientPhone": "23445566",
+    "clientSociety": "Coopérative Jemli",
+    "clientEmail": "k.jemli@coop-agri.tn"
+  },
+  "HCLPSvO5PUIsrU640DqD": {
+    "dateAdded": "2025-07-24T11:28:52.721567+00:00",
+    "clientLocation": "Bizerte",
+    "created_by": "admin",
+    "clientName": "Hedi Bouaziz",
+    "clientAddress": "Centre Ville, Bizerte",
+    "is_active": true,
+    "clientPhone": "25889900",
+    "clientSociety": "Société Agricole Bouaziz",
+    "clientEmail": "hedi.bouaziz@agribouaziz.com"
+  },
+  "cgs6mdKAEJ8ZjyWytPHw": {
+    "dateAdded": "2025-07-04T11:28:52.721567+00:00",
+    "clientLocation": "Sfax",
+    "created_by": "admin",
+    "clientName": "Mohamed Abdellaoui",
+    "clientAddress": "Route de Mahres, Sfax",
+    "is_active": true,
+    "clientPhone": "21907382",
+    "clientSociety": "Ferme Abdellaoui",
+    "clientEmail": "hamma.abdellaoui@gmail.com"
+  },
+  "zhZLbdNTJhc1S0eN6Hax": {
+    "dateAdded": "2025-07-19T11:28:52.721567+00:00",
+    "clientLocation": "Kasserine",
+    "created_by": "admin",
+    "clientName": "Salma Agrebi",
+    "clientAddress": "Route de Kairouan, Kasserine",
+    "is_active": true,
+    "clientPhone": "24778899",
+    "clientSociety": "Ferme Moderne Agrebi",
+    "clientEmail": "salma.agrebi@modernfarm.tn"
+  }
+}

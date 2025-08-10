@@ -3,7 +3,7 @@ Machines CRUD Blueprint - Updated for Simplified Workflow Structure
 Handles machine operations with simple current_stage approach
 """
 
-from flask import Blueprint, request, jsonify, session, render_template
+from flask import Blueprint, request, jsonify, session, render_template, redirect
 from datetime import datetime
 from .firebase_config import get_db, is_firebase_available
 from .users import require_role
@@ -11,10 +11,13 @@ from .users import require_role
 # Create machines blueprint
 machines_bp = Blueprint('machines', __name__, url_prefix='/machines')
 
+# Frontend URL configuration
+FRONTEND_URL = 'https://isolab-support.firebaseapp.com'
+
 @machines_bp.route('/view', methods=['GET'])
 def view_machines():
-    """Render the machines view page"""
-    return render_template('voir-machines.html')
+    """Redirect to the machines view page on frontend"""
+    return redirect(f'{FRONTEND_URL}/voir-machines.html')
 
 @machines_bp.route('', methods=['GET'])
 def get_all_machines():

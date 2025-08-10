@@ -10,15 +10,30 @@ from .firebase_config import get_db, is_firebase_available
 # Create clients blueprint
 clients_bp = Blueprint('clients', __name__, url_prefix='/clients')
 
+# Frontend URL configuration
+FRONTEND_URL = 'https://isolab-support.firebaseapp.com/'
+
 @clients_bp.route('/', methods=['GET'])
 def clients_page():
     if 'user_id' not in session:
-        return redirect(url_for('login_bp.login'))
-    return render_template('clients.html')
+        return redirect(f'{FRONTEND_URL}/login.html')
+    
+    # Check if user is admin
+    if session.get('role') != 'admin':
+        return redirect(f'{FRONTEND_URL}/dashboard.html')
+    
+    return redirect(f'{FRONTEND_URL}/clients.html')
 
 @clients_bp.route('/all', methods=['GET'])
 def get_clients():
     """Read - Get all clients"""
+    if 'user_id' not in session:
+        return jsonify({"error": "Not authenticated"}), 401
+    
+    if session.get('role') != 'admin':
+        return jsonify({"error": "Access denied. Admin role required."}), 403
+    
+    print("Fetching all clients...")
     try:
         db = get_db()
         if not is_firebase_available():
@@ -42,50 +57,60 @@ def get_clients():
 @clients_bp.route('', methods=['POST'])
 def create_client():
     """Create - Add new client"""
+    if 'user_id' not in session:
+        return jsonify({"error": "Not authenticated"}), 401
+    
+    if session.get('role') != 'admin':
+        return jsonify({"error": "Access denied. Admin role required."}), 403
+    
     try:
         db = get_db()
         if not is_firebase_available():
             return jsonify({"error": "Database not available"}), 500
             
         data = request.get_json()
+        print(f"Received client data: {data}")
         
-        # Basic validation
-        required_fields = ['society', 'manager', 'fiscalNumber', 'phone', 'address', 'location']
+        # Basic validation - match the database structure exactly
+        required_fields = ['clientName', 'clientSociety', 'clientPhone', 'clientAddress']
         for field in required_fields:
             if not data.get(field):
                 return jsonify({"error": f"Missing required field: {field}"}), 400
         
-        # Prepare client data
+        # Prepare client data - match database structure exactly
         client_data = {
-            'society': data['society'],
-            'manager': data['manager'],
-            'fiscalNumber': data['fiscalNumber'],
-            'phone': data['phone'],
-            'email': data.get('email', ''),
-            'address': data['address'],
-            'location': data['location'],
-            'type': data.get('type', 'Direct'),
-            'status': data.get('status', 'Actif'),
-            'paymentMode': data.get('paymentMode', ''),
-            'paymentStatus': data.get('paymentStatus', ''),
-            'notes': data.get('notes', ''),
-            'machines': [],
+            'clientName': data['clientName'],
+            'clientSociety': data['clientSociety'],
+            'clientEmail': data.get('clientEmail', ''),
+            'clientPhone': data['clientPhone'],
+            'clientAddress': data['clientAddress'],
+            'clientLocation': data.get('clientLocation', ''),
             'dateAdded': datetime.now(),
-            'dateUpdated': datetime.now()
+            'created_by': 'admin',  # Should get from session
+            'is_active': True
         }
+        
+        print(f"Saving client data: {client_data}")
         
         # Add to Firestore
         doc_ref = db.collection('clients').add(client_data)
         client_id = doc_ref[1].id
         
-        return jsonify({"message": "Client created", "id": client_id}), 201
+        return jsonify({"message": "Client created successfully", "id": client_id}), 201
         
     except Exception as e:
+        print(f"Error creating client: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 @clients_bp.route('/<client_id>', methods=['GET'])
 def get_client(client_id):
     """Read - Get specific client"""
+    if 'user_id' not in session:
+        return jsonify({"error": "Not authenticated"}), 401
+    
+    if session.get('role') != 'admin':
+        return jsonify({"error": "Access denied. Admin role required."}), 403
+    
     try:
         db = get_db()
         if not is_firebase_available():
@@ -108,6 +133,12 @@ def get_client(client_id):
 @clients_bp.route('/<client_id>', methods=['PUT'])
 def update_client(client_id):
     """Update - Modify existing client"""
+    if 'user_id' not in session:
+        return jsonify({"error": "Not authenticated"}), 401
+    
+    if session.get('role') != 'admin':
+        return jsonify({"error": "Access denied. Admin role required."}), 403
+    
     try:
         db = get_db()
         if not is_firebase_available():
@@ -121,11 +152,10 @@ def update_client(client_id):
         if not doc.exists:
             return jsonify({"error": "Client not found"}), 404
         
-        # Update data
+        # Update data - match database structure exactly
         update_data = {}
-        allowed_fields = ['society', 'manager', 'fiscalNumber', 'phone', 'email', 
-                         'address', 'location', 'type', 'status', 'paymentMode', 
-                         'paymentStatus', 'notes', 'machines']
+        allowed_fields = ['clientName', 'clientSociety', 'clientEmail', 'clientPhone', 
+                         'clientAddress', 'clientLocation', 'is_active']
         
         for field in allowed_fields:
             if field in data:
@@ -143,6 +173,12 @@ def update_client(client_id):
 @clients_bp.route('/<client_id>', methods=['DELETE'])
 def delete_client(client_id):
     """Delete - Remove client"""
+    if 'user_id' not in session:
+        return jsonify({"error": "Not authenticated"}), 401
+    
+    if session.get('role') != 'admin':
+        return jsonify({"error": "Access denied. Admin role required."}), 403
+    
     try:
         db = get_db()
         if not is_firebase_available():

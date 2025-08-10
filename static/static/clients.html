@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clients - ISOLAB Agri Support</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2 class="sidebar-title">ISOLAB Agri Support</h2>
+                <p class="sidebar-subtitle">Système de gestion</p>
+            </div>
+            <ul class="sidebar-nav">
+                <li><a href="#" id="nav-dashboard"><i class="fas fa-home"></i> Tableau de bord</a></li>
+                <li><a href="#" id="nav-my-tasks"><i class="fas fa-tasks"></i> Mes tâches</a></li>
+                <li><a href="#" id="nav-machines"><i class="fas fa-cogs"></i> Machines</a></li>
+                <li id="nav-clients-item"><a href="#" id="nav-clients" class="active"><i class="fas fa-users"></i> Clients</a></li>
+                <li id="nav-users-item"><a href="#" id="nav-users"><i class="fas fa-user-cog"></i> Utilisateurs</a></li>
+                <li><a href="#" id="nav-logout" onclick="handleLogout(); return false;"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">Gestion des Clients</h1>
+                <p class="page-subtitle">Gérez vos clients et leurs informations</p>
+            </div>
+
+            <!-- Search and Filter Section -->
+            <div class="search-section">
+                <div class="search-input-group">
+                    <input type="text" id="clientSearch" class="search-bar" placeholder="Rechercher par nom, société, téléphone...">
+                    <button class="btn btn-primary search-btn" onclick="searchClients()">
+                        <i class="fas fa-search"></i> Rechercher
+                    </button>
+                    <button class="btn btn-success" onclick="openAddClientModal()">
+                        <i class="fas fa-user-plus"></i> Ajouter un Client
+                    </button>
+                </div>
+                
+                <div class="search-filters">
+                    <select id="statusFilter" class="filter-select">
+                        <option value="">Tous les statuts</option>
+                        <option value="actif">Actif</option>
+                        <option value="inactif">Inactif</option>
+                    </select>
+                    <select id="typeFilter" class="filter-select">
+                        <option value="">Type de client</option>
+                        <option value="leasing">Leasing</option>
+                        <option value="direct">Direct</option>
+                        <option value="agri">Agri</option>
+                    </select>
+                    <select id="locationFilter" class="filter-select">
+                        <option value="">Toutes les régions</option>
+                        <option value="sfax">Sfax</option>
+                        <option value="sidi-bouzid">Sidi Bouzid</option>
+                        <option value="autres">Autres</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Clients Table -->
+            <div class="table-container">
+                <h3 style="padding: 20px; margin: 0; border-bottom: 1px solid #e4e6ea;">
+                    Liste des Clients
+                    <span class="total-count" id="totalClientsCount">0 clients</span>
+                </h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Société</th>
+                            <th>Gérant</th>
+                            <th>Téléphone</th>
+                            <th>Email</th>
+                            <th>Localisation</th>
+                            <th>Type</th>
+                            <th>Machines</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientsTableBody">
+                        <!-- Data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Client Details Modal -->
+            <div id="clientModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 id="modalTitle">Détails du Client</h3>
+                        <button class="close-modal" onclick="closeClientModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="client-details">
+                            <div class="client-info-grid">
+                                <div class="client-info-item">
+                                    <label>Nom du client:</label>
+                                    <span id="modalClientName">-</span>
+                                </div>
+                                <div class="client-info-item">
+                                    <label>Société:</label>
+                                    <span id="modalClientSociety">-</span>
+                                </div>
+                                <div class="client-info-item">
+                                    <label>Téléphone:</label>
+                                    <span id="modalClientPhone">-</span>
+                                </div>
+                                <div class="client-info-item">
+                                    <label>Email:</label>
+                                    <span id="modalClientEmail">-</span>
+                                </div>
+                                <div class="client-info-item">
+                                    <label>Adresse:</label>
+                                    <span id="modalClientAddress">-</span>
+                                </div>
+                                <div class="client-info-item">
+                                    <label>Localisation:</label>
+                                    <span id="modalClientLocation">-</span>
+                                </div>
+                            </div>
+                            
+                            <div class="client-machines">
+                                <h4>Machines du Client</h4>
+                                <div id="clientMachines">
+                                    <!-- Client machines will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeClientModal()">Fermer</button>
+                        <button class="btn btn-primary" onclick="editClient()">Modifier</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Client Modal -->
+    <div id="addClientModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-building"></i> Ajouter un nouveau client</h3>
+                <button class="close-modal" onclick="closeAddClientModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addClientForm">
+                    <!-- Client Information -->
+                    <div class="form-section">
+                        <h4 class="section-title"><i class="fas fa-user"></i> Informations du client</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-user"></i> Nom du client *</label>
+                                <input type="text" id="clientName" name="clientName" class="form-input" required placeholder="Ex: Ahmed Ben Ali">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-building"></i> Société *</label>
+                                <input type="text" id="clientSociety" name="clientSociety" class="form-input" required placeholder="Ex: Ferme Abdellaoui">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Information -->
+                    <div class="form-section">
+                        <h4 class="section-title"><i class="fas fa-phone"></i> Informations de contact</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-phone"></i> Téléphone *</label>
+                                <input type="tel" id="clientPhone" name="clientPhone" class="form-input" required placeholder="Ex: 21907382">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-envelope"></i> Email</label>
+                                <input type="email" id="clientEmail" name="clientEmail" class="form-input" placeholder="Ex: client@example.com">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-map-marker-alt"></i> Adresse *</label>
+                            <input type="text" id="clientAddress" name="clientAddress" class="form-input" required placeholder="Ex: Route de Mahres, Sfax">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-map"></i> Localisation</label>
+                            <select id="clientLocation" name="clientLocation" class="form-input">
+                                <option value="">Sélectionner...</option>
+                                <option value="Tunis">Tunis</option>
+                                <option value="Sfax">Sfax</option>
+                                <option value="Sousse">Sousse</option>
+                                <option value="Sidi Bouzid">Sidi Bouzid</option>
+                                <option value="Kairouan">Kairouan</option>
+                                <option value="Ariana">Ariana</option>
+                                <option value="Autres">Autres</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeAddClientModal()">Annuler</button>
+                <button type="button" class="btn btn-success" onclick="submitClientForm()">
+                    <i class="fas fa-save"></i> Enregistrer le client
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/template.js"></script>
+    <script src="/js/sidebar-nav.js"></script>
+    <script src="/js/navigation.js"></script>
+    <script src="/js/clients.js"></script>
+</body>
+</html>

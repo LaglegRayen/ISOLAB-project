@@ -1,2 +1,2 @@
-# Ignore Firebase config JSON
-config/*.json
+
+config
